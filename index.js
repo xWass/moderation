@@ -72,7 +72,7 @@ client.on('interactionCreate', async (interaction) => {
         console.error(error);
         interaction.reply({
             embeds: [{
-                description: `An error has occurred! Message <@928624781731983380> (xWass#0001) with this information along with what command you ran: \n\`\`\`Error: ${ error }\`\`\``
+                description: `An error has occurred! Message <@928624781731983380> (xWass#0001) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${ error }\`\`\``
             }],
             ephemeral: true
         });
