@@ -1,5 +1,6 @@
 const fs=require('fs');
 const chalk=require('chalk');
+const {MongoClient}=require('mongodb');
 const {
     Client, Collection, Intents, MessageEmbed,
 }=require('discord.js');
@@ -24,6 +25,14 @@ const commandFiles=fs.readdirSync('./slashcmds').filter((file) => file.endsWith(
 const {REST}=require('@discordjs/rest');
 const {Routes}=require('discord-api-types/v9');
 
+const databaseConnect=async () => {
+    const mongoClient=new MongoClient(process.env.MONGO);
+    await mongoClient.connect();
+    const database=mongoClient.db("Moderation");
+    client.db=database;
+    console.log(chalk.greenBright("Connected to the \"Warns\" Database"))
+};
+
 const commands=[];
 for (const file of commandFiles) {
     const command=require(`./slashcmds/${ file }`);
@@ -46,7 +55,8 @@ const rest=new REST({version: '9'}).setToken(process.env.TOKEN);
 })();
 
 client.on('ready', async () => {
-    client.user.setActivity('your builds!', {type: 'LISTENING'});
+    client.user.setActivity('trouble 👀', {type: 'LISTENING'});
+    databaseConnect()
 });
 
 client.once('ready', async () => {
