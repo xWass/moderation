@@ -20,7 +20,7 @@ module.exports={
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command warn`);
         const mem=await interaction.options.getMember('member')||null;
         const reason=await interaction.options.getString('reason')||'No reason specified.';
-        const moderator=interaction.user.tag
+        const moderator=interaction.user.tag;
         /*
         const time=new Date.now()
         console.log(time)
@@ -30,10 +30,7 @@ module.exports={
         if (!interaction.member.permissions.has('MANAGE_MESSAGES')||!interaction.guild.me.permissions.has('MANAGE_MESSAGES')) {
             interaction.reply({
                 embeds: [{
-                    description: "Either you or I are missing the correct permissions (MANAGE_MESSAGES) to perform this action",
-                    footer: {
-                        text: "Check my role's permissions and make sure I have the permission to Ban Members"
-                    }
+                    description: "You are not a moderator!",
                 }]
             });
             return;
@@ -43,7 +40,7 @@ module.exports={
             embeds: [{
                 description: `<@${ mem.id }> has been warned! \nReason: ${ reason }`,
                 footer: {
-                    text: `Moderator: ${ interaction.user.tag }`
+                    text: `Moderator: ${ moderator }`
                 },
                 color: 'GREEN'
             }],
