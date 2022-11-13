@@ -35,32 +35,31 @@ module.exports={
                     title: "Nobody has been warned in this server..."
                 }],
                 ephemeral: true
-            })
+            });
             return;
         } else {
             const memm=await db.findOne({
-                "guild": {
-                    "id": interaction.guild.id,
-                    [mem.user.id]: {
-                        $exists: true
-                    }
+                'guild.id': interaction.guild.id,
+                [`guild.warns.${ mem.user.id }`]: {
+                    $exists: true
                 }
             });
-            console.log(memm)
+
+            console.log(memm);
             if (!memm) {
                 interaction.reply({
                     embeds: [{
                         title: "This member has no infractions"
                     }],
                     ephemeral: true
-                })
+                });
                 return;
             }
             interaction.reply({
                 embeds: [{
                     title: "yes"
                 }]
-            })
+            });
         }
     }
 };

@@ -20,6 +20,7 @@ module.exports={
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command warn`);
         const mem=await interaction.options.getMember('member')||null;
         const reason=await interaction.options.getString('reason')||'No reason specified.';
+        const moderator=interaction.user.tag
         /*
         const time=new Date.now()
         console.log(time)
@@ -56,7 +57,7 @@ module.exports={
                     "id": interaction.guild.id,
                     "warns": {
                         [mem.user.id]: [
-                            {reason, time}
+                            {reason, time, moderator}
                         ]
                     }
                 }
@@ -66,7 +67,7 @@ module.exports={
                 "guild.id": interaction.guild.id,
             }, {
                 $push: {
-                    [`guild.warns.${ [mem.user.id] }`]: {reason, time}
+                    [`guild.warns.${ [mem.user.id] }`]: {reason, time, moderator}
                 }
             });
         }
