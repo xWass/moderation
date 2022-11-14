@@ -11,19 +11,24 @@ module.exports={
             .setRequired(true)
             .setDescription('The member to mute.'))
         .addStringOption((option) => option
-            .setName('time')
+            .setName('timee')
             .setRequired(true)
             .setDescription('Time to mute for. (1m, 1h, 1d, 1w. 28 days max)'))
         .addStringOption((option) => option
             .setName('reason')
             .setDescription('Reason for muting this user.')),
 
-    async execute(interaction) {
+    async execute(interaction, client) {
+        const type="Mute"
+        const db=await client.db.collection('Infractions');
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command mute`);
         const mem=await interaction.options.getMember('member')||null;
-        const res=await interaction.options.getString('reason')||'No reason specified.';
-        const time=await interaction.options.getString('time');
-        const formattedTime=ms(time);
+        const reason=await interaction.options.getString('reason')||'No reason specified.';
+        const timee=await interaction.options.getString('timee');
+        const formattedTime=ms(timee);
+        const moderator=interaction.user.tag;
+        const time=Math.floor((new Date()).getTime()/1000);
+
 
         if (!interaction.member.permissions.has('MODERATE_MEMBERS')||!interaction.guild.me.permissions.has('MODERATE_MEMBERS')) {
             interaction.reply({
@@ -40,7 +45,7 @@ module.exports={
         if (!mem.moderatable) {
             interaction.reply({
                 embeds: [{
-                    description: "Something went wrong! Check your server's role order, or stop trying to ban the owner!",
+                    description: "Something went wrong! Check your server's role order, or stop trying to mute the owner!",
                     footer: {
                         text: "Make sure my highest role is above whoever you are trying to mute."
                     }
@@ -48,12 +53,33 @@ module.exports={
             });
             return;
         }
+        const warned=await db.findOne({"guild.id": interaction.guild.id});
+        if (!warned) {
+            await db.insertOne({
+                "guild": {
+                    "id": interaction.guild.id,
+                    "infractions": {
+                        [mem.user.id]: [
+                            {type, reason, time, moderator}
+                        ]
+                    }
+                }
+            });
+        } else {
+            await db.updateOne({
+                "guild.id": interaction.guild.id,
+            }, {
+                $push: {
+                    [`guild.infractions.${ [mem.user.id] }`]: {type, reason, time, moderator}
+                }
+            });
+        }
 
         try {
-            await mem.timeout(formattedTime, res);
+            await mem.timeout(formattedTime, reason);
             interaction.reply({
                 embeds: [{
-                    description: `<@${ mem.id }> has been muted for ${ time }! \nReason: ${ res }`,
+                    description: `<@${ mem.id }> has been muted for ${ timee }! \nReason: ${ reason }`,
                     footer: {
                         text: `Moderator: ${ interaction.user.tag }`
                     },

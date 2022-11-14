@@ -12,7 +12,7 @@ module.exports={
 
     async execute(interaction, client) {
 
-        const db=await client.db.collection('Warns');
+        const db=await client.db.collection('Infractions');
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command infractions`);
         const mem=await interaction.options.getMember('member')||null;
 
@@ -40,12 +40,11 @@ module.exports={
         } else {
             const memm=await db.findOne({
                 'guild.id': interaction.guild.id,
-                [`guild.warns.${ mem.user.id }`]: {
+                [`guild.infractions.${ mem.user.id }`]: {
                     $exists: true
                 }
             });
 
-            console.log(memm);
             if (!memm) {
                 interaction.reply({
                     embeds: [{
@@ -55,11 +54,28 @@ module.exports={
                 });
                 return;
             }
+            const newArr=await memm.guild.infractions[mem.user.id].map(x => ({name: `${ x.type||"N/A" }`, value: `Reason: ${ x.reason }\nTime: <t:${ x.time }:f>`, inline: false})).reverse().slice(0, 10)
             interaction.reply({
                 embeds: [{
-                    title: "yes"
+                    description: `**${ mem.user.tag }'s infractions:**`,
+                    fields: newArr,
+                    footer: {
+                        text: "Limited to the 10 most recent infractions."
+                    }
                 }]
             });
+
+
+            /*z
+            interaction.reply({
+                embeds: [{
+                    description: `**${ mem.user.tag }'s infractions:**`,
+                    fields: [
+                        {name: `${ memm.guild.infractions[mem.user.id][0].type }`, value: `Reason: ${ memm.guild.infractions[mem.user.id][0].reason }\nTime: <t:${ memm.guild.infractions[mem.user.id][0].time }:f>`, inline: true}
+                    ]
+                }]
+            });
+            */
         }
     }
 };

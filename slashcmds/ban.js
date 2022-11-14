@@ -13,10 +13,16 @@ module.exports={
             .setName('reason')
             .setDescription('Reason for banning this user.')),
 
-    async execute(interaction) {
+    async execute(interaction, client) {
+        const type="Ban"
+        const db=await client.db.collection('Infractions');
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command ban`);
         const mem=await interaction.options.getMember('member')||null;
         const res=await interaction.options.getString('reason')||'No reason specified.';
+        const moderator=interaction.user.tag;
+        const time=Math.floor((new Date()).getTime()/1000);
+
+
 
         if (!interaction.member.permissions.has('BAN_MEMBERS')||!interaction.guild.me.permissions.has('BAN_MEMBERS')) {
             interaction.reply({
@@ -28,6 +34,27 @@ module.exports={
                 }]
             });
             return;
+        }
+        const warned=await db.findOne({"guild.id": interaction.guild.id});
+        if (!warned) {
+            await db.insertOne({
+                "guild": {
+                    "id": interaction.guild.id,
+                    "infractions": {
+                        [mem.user.id]: [
+                            {type, reason, time, moderator}
+                        ]
+                    }
+                }
+            });
+        } else {
+            await db.updateOne({
+                "guild.id": interaction.guild.id,
+            }, {
+                $push: {
+                    [`guild.infractions.${ [mem.user.id] }`]: {type, reason, time, moderator}
+                }
+            });
         }
 
         if (!mem.bannable) {

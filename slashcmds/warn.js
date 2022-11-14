@@ -15,8 +15,8 @@ module.exports={
             .setDescription('Reason for warning this user.')),
 
     async execute(interaction, client) {
-
-        const db=await client.db.collection('Warns');
+        const type="Warn"
+        const db=await client.db.collection('Infractions');
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command warn`);
         const mem=await interaction.options.getMember('member')||null;
         const reason=await interaction.options.getString('reason')||'No reason specified.';
@@ -52,9 +52,9 @@ module.exports={
             await db.insertOne({
                 "guild": {
                     "id": interaction.guild.id,
-                    "warns": {
+                    "infractions": {
                         [mem.user.id]: [
-                            {reason, time, moderator}
+                            {type, reason, time, moderator}
                         ]
                     }
                 }
@@ -64,7 +64,7 @@ module.exports={
                 "guild.id": interaction.guild.id,
             }, {
                 $push: {
-                    [`guild.warns.${ [mem.user.id] }`]: {reason, time, moderator}
+                    [`guild.infractions.${ [mem.user.id] }`]: {type, reason, time, moderator}
                 }
             });
         }

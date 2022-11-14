@@ -30,7 +30,7 @@ const databaseConnect=async () => {
 	await mongoClient.connect();
 	const database=mongoClient.db("Moderation");
 	client.db=database;
-	console.log(chalk.greenBright("Connected to the \"Warns\" Database"));
+	console.log(chalk.greenBright("Connected to the \"Moderation\" Database"));
 };
 
 const commands=[];
