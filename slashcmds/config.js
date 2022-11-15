@@ -72,6 +72,7 @@ module.exports={
         }
 
         const chosen=await interaction.options.getSubcommand();
+
         if (chosen==="automod") {
             if (!found) {
                 await db.insertOne({
@@ -81,7 +82,11 @@ module.exports={
                         },
                         "config": {
                             "automod": value,
-                            "verify": false
+                            "verify": {
+                                "status": false,
+                                "channel": null,
+                                "role": null
+                            }
                         }
                     }
                 });
@@ -94,12 +99,13 @@ module.exports={
                         color: 'GREEN'
                     }],
                 });
+                return;
             } else {
                 await db.updateOne({
                     "guild.id": interaction.guild.id,
                 }, {
                     $set: {
-                        "guild.config.automod": value // pulled from subcommand
+                        "guild.config.automod": value
                     }
                 });
                 interaction.reply({
@@ -112,7 +118,6 @@ module.exports={
                     }],
                 });
             }
-
         } else if (chosen==="verify") {
             if (!found) {
                 await db.insertOne({
@@ -122,64 +127,35 @@ module.exports={
                         },
                         "config": {
                             "automod": false,
-                            "verify": value
+                            "verify": {
+                                "status": value,
+                                "channel": chan.id,
+                                "role": role.id
+                            }
                         }
                     }
                 });
                 interaction.reply({
                     embeds: [{
-                        description: `Verify has been set to \`${ modify }d\`in channel <#${ chan.id }>`,
+                        description: `Verify has been set to \`${ modify }d\` \nVerify Channel: <#${ chan.id }> \nVerify Role: <@&${ role.id }>`,
                         footer: {
                             text: `Moderator: ${ moderator }`
                         },
                         color: 'GREEN'
                     }],
                 });
-                if (value===true) {
-                    try {
-                        await chan.permissionOverwrites.set([
-                            {
-                                id: role.id,
-                                allow: VIEW_CHANNEL
-                            },
-                            {
-                                id: interaction.guild.id,
-                                deny: VIEW_CHANNEL
-                            }
-                        ]);
-                    } catch (err) {
-                        interaction.followUp({
-                            embeds: [{
-                                title: `I can't change permissions in #${ chan.name }`,
-                                description: `\`\`\`${ err }\`\`\``,
-                                footer: {
-                                    text: "I require the Manage Permissions role, and for my highest role to be above the verification role"
-                                }
-                            }]
-                        });
-                    }
-
-                    try {
-                        chan.send({
-                            embeds: [{
-                                title: "Type `!verify` to verify in this server",
-                            }]
-                        });
-                    } catch {
-                        interaction.followUp({
-                            embeds: [{
-                                title: `I do not have access to #${ chan.name }`,
-                                footer: {
-                                    text: "Role permissions were successfully changed."
-                                }
-                            }]
-                        });
-                    }
-
-                }
-
+                return;
             } else {
                 if (value===true) {
+                    await db.updateOne({
+                        "guild.id": interaction.guild.id,
+                    }, {
+                        $set: {
+                            "guild.config.verify.status": value,
+                            "guild.config.verify.channel": chan.id,
+                            "guild.config.verify.role": role.id,
+                        }
+                    });
                     try {
                         await chan.permissionOverwrites.set([
                             {
@@ -201,7 +177,7 @@ module.exports={
                                 }
                             }]
                         });
-                        return
+                        return;
                     }
 
                     try {
@@ -223,23 +199,36 @@ module.exports={
                         return;
                     }
 
+                    interaction.reply({
+                        embeds: [{
+                            description: `Verify has been set to \`${ modify }d\` \nVerify Channel: <#${chan.id}> \nVerify Role: <@&${role.id}>`,
+                            footer: {
+                                text: `Moderator: ${ moderator }`
+                            },
+                            color: 'GREEN'
+                        }],
+                    });
+
+                } else if (value===false) {
+                    await db.updateOne({
+                        "guild.id": interaction.guild.id,
+                    }, {
+                        $set: {
+                            "guild.config.verify.status": value,
+                            "guild.config.verify.channel": null,
+                            "guild.config.verify.role": null,
+                        }
+                    });
+                    interaction.reply({
+                        embeds: [{
+                            description: `Verify has been set to \`${ modify }d\``,
+                            footer: {
+                                text: `Moderator: ${ moderator }`
+                            },
+                            color: 'GREEN'
+                        }],
+                    });
                 }
-                interaction.reply({
-                    embeds: [{
-                        description: `Verify has been set to \`${ modify }d\``,
-                        footer: {
-                            text: `Moderator: ${ moderator }`
-                        },
-                        color: 'GREEN'
-                    }],
-                });
-                await db.updateOne({
-                    "guild.id": interaction.guild.id,
-                }, {
-                    $set: {
-                        "guild.config.verify": value
-                    }
-                });
             }
         }
     }
