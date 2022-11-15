@@ -1,4 +1,3 @@
-// this is where funi db stuff gets involved i hate it 
 const {SlashCommandBuilder}=require('@discordjs/builders');
 const chalk=require('chalk');
 module.exports={
@@ -21,10 +20,6 @@ module.exports={
         const mem=await interaction.options.getMember('member')||null;
         const reason=await interaction.options.getString('reason')||'No reason specified.';
         const moderator=interaction.user.tag;
-        /*
-        const time=new Date.now()
-        console.log(time)
-        */
         const time=Math.floor((new Date()).getTime()/1000);
 
         if (!interaction.member.permissions.has('MANAGE_MESSAGES')||!interaction.guild.me.permissions.has('MANAGE_MESSAGES')) {
@@ -56,6 +51,10 @@ module.exports={
                         [mem.user.id]: [
                             {type, reason, time, moderator}
                         ]
+                    },
+                    "config": {
+                        "automod": false,
+                        "verify": false
                     }
                 }
             });

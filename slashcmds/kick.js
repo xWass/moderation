@@ -55,6 +55,10 @@ module.exports={
                         [mem.user.id]: [
                             {type, reason, time, moderator}
                         ]
+                    },
+                    "config": {
+                        "automod": false,
+                        "verify": false
                     }
                 }
             });
