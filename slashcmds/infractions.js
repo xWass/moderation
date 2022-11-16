@@ -64,18 +64,6 @@ module.exports={
                     }
                 }]
             });
-
-
-            /*z
-            interaction.reply({
-                embeds: [{
-                    description: `**${ mem.user.tag }'s infractions:**`,
-                    fields: [
-                        {name: `${ memm.guild.infractions[mem.user.id][0].type }`, value: `Reason: ${ memm.guild.infractions[mem.user.id][0].reason }\nTime: <t:${ memm.guild.infractions[mem.user.id][0].time }:f>`, inline: true}
-                    ]
-                }]
-            });
-            */
         }
     }
 };

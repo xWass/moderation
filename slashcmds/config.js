@@ -183,7 +183,7 @@ module.exports={
                     try {
                         chan.send({
                             embeds: [{
-                                title: "Type `!verify` to verify in this server",
+                                description: "To verify, click this and press enter: </verify:1042262928969170944>",
                             }]
                         });
                     } catch (err) {

@@ -13,6 +13,7 @@ intents.add(
 	Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
 	Intents.FLAGS.GUILD_PRESENCES,
 	Intents.FLAGS.GUILD_MEMBERS,
+	Intents.FLAGS.DIRECT_MESSAGES
 );
 
 const client=new Client({intents, partials: ["MESSAGE", "REACTION"], allowedMentions: {parse: ["users"]}});
