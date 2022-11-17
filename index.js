@@ -89,5 +89,20 @@ client.on("interactionCreate", async (interaction) => {
 		});
 	}
 });
+client.on("messageCreate", async (message) => {
+	// check if automod on enabled in guild db
+	const reg=(/\b(?:discord\.gg\/[a-zA-Z]+|(?:(?:www|canary|ptb)\.)?discord(?:app)?\.com\/invite\/[a-zA-Z]+)\b/gi)
 
+	if (true /* automod on */) {
+		if (message.content.match(reg)) {
+			await message.reply({
+				embeds: [{
+					title: "No invites allowed!"
+				}],
+				ephemeral: true
+			})
+			message.delete()
+		}
+	}
+})
 client.login(process.env.TOKEN);
