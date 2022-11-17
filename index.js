@@ -83,26 +83,73 @@ client.on("interactionCreate", async (interaction) => {
 		console.error(error);
 		interaction.reply({
 			embeds: [{
-				description: `An error has occurred! Message <@928624781731983380> (xWass#0001) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${ error }\`\`\``
+				description: `An error has occurred! Message <@928624781731983380> (xWass#0001) with this information along with what command you ran: \n\`\`\`Command: ${ interaction.commandName }\nError: ${ error }\`\`\``
 			}],
 			ephemeral: true
 		});
 	}
 });
 client.on("messageCreate", async (message) => {
-	// check if automod on enabled in guild db
-	const reg=(/\b(?:discord\.gg\/[a-zA-Z]+|(?:(?:www|canary|ptb)\.)?discord(?:app)?\.com\/invite\/[a-zA-Z]+)\b/gi)
+	if (message.author.bot) return;
+	if (message.channel.type==="DM") return;
+	const db=await client.db.collection('Infractions');
+	const found=await db.findOne({"guild.id": message.guild.id})||null;
+	if (!found) {
+		await db.insertOne({
+			"guild": {
+				"id": message.guild.id,
+				"infractions": {
+				},
+				"config": {
+					"automod": false,
+					"verify": {
+						"status": false,
+						"channel": null,
+						"role": null
+					}
+				}
+			}
+		});
+	}
 
-	if (true /* automod on */) {
+	const automod=await db.findOne({
+		'guild.id': message.guild.id,
+		[`guild.config.automod`]: {
+			$exists: true
+		}
+	});
+
+	const reg=(/\b(?:discord\.gg\/[a-zA-Z]+|(?:(?:www|canary|ptb)\.)?discord(?:app)?\.com\/invite\/[a-zA-Z]+)\b/gi);
+
+	if (automod.guild.config.automod===true) {
+
 		if (message.content.match(reg)) {
+			message.delete();
+			if (automod.guild.config.automod.warn===true) {
+				// add warn to db
+				return;
+			}
 			await message.reply({
 				embeds: [{
 					title: "No invites allowed!"
 				}],
 				ephemeral: true
-			})
-			message.delete()
+			});
+		}
+		if (message.content.includes("bad word")) {
+			message.delete();
+			if (automod.guild.config.automod.warn===true) {
+				// add warn to db
+				return;
+			}
+			await message.author.send({
+				embeds: [{
+					title: "Watch your language!"
+				}],
+				ephemeral: true
+			});
+
 		}
 	}
-})
+});
 client.login(process.env.TOKEN);

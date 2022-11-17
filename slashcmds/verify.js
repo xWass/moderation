@@ -36,7 +36,7 @@ module.exports={
         .setDescription("Verify yourself in a server."),
     async execute(interaction, client) {
         console.log(`${ chalk.greenBright("[EVENT ACKNOWLEDGED]") } interactionCreate with command infractions`);
-
+        const db=await client.db.collection('Infractions');
         const {captchaString, buffer}=createCaptcha();
         const attachment=new MessageAttachment(buffer, "captcha.png");
 
@@ -92,5 +92,15 @@ module.exports={
                 description: "You have successfully verified your account. Thanks!"
             }]
         });
+        const memm=await db.findOne({
+            'guild.id': interaction.guild.id,
+            [`guild.config.verify.role`]: {
+                $exists: true
+            }
+        });
+
+        const fetch=memm.guild.config.verify.role
+        const role=interaction.guild.roles.cache.find(r => r.id===fetch);
+        interaction.member.roles.add(role)
     }
 };

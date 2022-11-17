@@ -18,6 +18,17 @@ module.exports={
                         )
                         .setRequired(true)
                 )
+                .addStringOption((stringOption) =>
+                    stringOption
+                        .setName("warn")
+                        .setDescription("Warn the user when automod is triggered?")
+                        .addChoices(
+                            {name: 'Enable', value: 'Enable'},
+                            {name: 'Disable', value: 'Disable'},
+                        )
+                        .setRequired(true)
+                )
+
         )
         .addSubcommand(sub =>
             sub
@@ -51,11 +62,15 @@ module.exports={
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command config`);
         const moderator=interaction.user.tag;
         const modify=await interaction.options.getString('modify');
+        const warn=await interaction.options.getString('warn');
         const chan=await interaction.options.getChannel('channel');
         const role=await interaction.options.getRole('role');
         let value;
         if (modify==="Enable") value=true;
         if (modify==="Disable") value=false;
+        let enableWarn;
+        if (warn==="Enable") enableWarn=true;
+        if (warn==="Disable") enableWarn=false;
 
         const found=await db.findOne({"guild.id": interaction.guild.id});
 
@@ -81,7 +96,10 @@ module.exports={
                         "infractions": {
                         },
                         "config": {
-                            "automod": value,
+                            "automod": {
+                                "status": value,
+                                "warn": enableWarn
+                            },
                             "verify": {
                                 "status": false,
                                 "channel": null,
@@ -105,7 +123,8 @@ module.exports={
                     "guild.id": interaction.guild.id,
                 }, {
                     $set: {
-                        "guild.config.automod": value
+                        "guild.config.automod.status": value,
+                        "guild.config.automod.warn": enableWarn
                     }
                 });
                 interaction.reply({
@@ -126,7 +145,10 @@ module.exports={
                         "infractions": {
                         },
                         "config": {
-                            "automod": false,
+                            "automod": {
+                                "status": false,
+                                "warn": false
+                            },
                             "verify": {
                                 "status": value,
                                 "channel": chan.id,
