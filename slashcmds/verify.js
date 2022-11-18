@@ -34,6 +34,7 @@ module.exports={
     data: new SlashCommandBuilder()
         .setName("verify")
         .setDescription("Verify yourself in a server."),
+    
     async execute(interaction, client) {
         console.log(`${ chalk.greenBright("[EVENT ACKNOWLEDGED]") } interactionCreate with command infractions`);
         const db=await client.db.collection('Infractions');

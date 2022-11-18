@@ -14,7 +14,7 @@ module.exports={
             .setDescription('Reason for banning this user.')),
 
     async execute(interaction, client) {
-        const type="Ban"
+        const type="Ban";
         const db=await client.db.collection('Infractions');
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command ban`);
         const mem=await interaction.options.getMember('member')||null;
@@ -74,7 +74,7 @@ module.exports={
         }
 
         try {
-            await mem.ban({deleteMessageSeconds: 3600, reason: res})
+            await mem.ban({deleteMessageSeconds: 3600, reason: res});
             interaction.reply({
                 embeds: [{
                     description: `<@${ mem.id }> has been banned! \nReason: ${ res }`,
@@ -88,7 +88,7 @@ module.exports={
         } catch (err) {
             interaction.reply({
                 embeds: [{
-                    description: `Something went very wrong. Send this error to xWass#0001! \n\`\`\`${ err }\`\`\``
+                    description: `Something went very wrong. Send this error to xWass#5848! \n\`\`\`${ err }\`\`\``
                 }]
             });
         }

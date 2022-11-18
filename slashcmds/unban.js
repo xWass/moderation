@@ -15,7 +15,7 @@ module.exports={
 
     async execute(interaction, client) {
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command unban`);
-        const users=await interaction.options.getUser('user')
+        const users=await interaction.options.getUser('user');
         const res=await interaction.options.getString('reason')||'No reason specified.';
 
         if (!interaction.member.permissions.has('BAN_MEMBERS')||!interaction.guild.me.permissions.has('BAN_MEMBERS')) {
@@ -32,10 +32,10 @@ module.exports={
 
 
         try {
-            await interaction.guild.members.unban(users)
+            await interaction.guild.members.unban(users);
             interaction.reply({
                 embeds: [{
-                    description: `${users.tag} has been unbanned! \nReason: ${ res }`,
+                    description: `${ users.tag } has been unbanned! \nReason: ${ res }`,
                     footer: {
                         text: `Moderator: ${ interaction.user.tag }`
                     },
@@ -46,7 +46,7 @@ module.exports={
         } catch (err) {
             interaction.reply({
                 embeds: [{
-                    description: `Something went very wrong. Send this error to xWass#0001! \n\`\`\`${ err }\`\`\``
+                    description: `Something went very wrong. Send this error to xWass#5848! \n\`\`\`${ err }\`\`\``
                 }]
             });
         }

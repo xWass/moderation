@@ -11,3 +11,4 @@ Complete:
 
 In progress:
 - Filling in naughty words for automod. might .gitignore this one D:
+- Added help command, currently broken
