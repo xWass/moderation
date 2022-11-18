@@ -5,8 +5,9 @@ Complete:
     -- Role is now given to members who verify
 - Database modification for flexible verification channel and role ids
 - messageCreate event for automod. automod will include discord invite link deletion, slur and spam detection
-
 - New option added to automod - warn: This allows admins to enable/disable automatic warning for automod triggers
 
+- Automod auto warn system completed
+
 In progress:
-- Filling in db stuff above automod warn option
+- Filling in naughty words for automod. might .gitignore this one D:

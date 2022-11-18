@@ -121,12 +121,31 @@ client.on("messageCreate", async (message) => {
 
 	const reg=(/\b(?:discord\.gg\/[a-zA-Z]+|(?:(?:www|canary|ptb)\.)?discord(?:app)?\.com\/invite\/[a-zA-Z]+)\b/gi);
 
-	if (automod.guild.config.automod===true) {
+	if (automod.guild.config.automod.status===true) {
 
 		if (message.content.match(reg)) {
+			const type="AutoMod";
+			const reason="Server Advertising.";
+			const time=Math.floor((new Date()).getTime()/1000);
+			const moderator=client.user.tag;
 			message.delete();
 			if (automod.guild.config.automod.warn===true) {
-				// add warn to db
+				await db.updateOne({
+					"guild.id": message.guild.id,
+				}, {
+					$push: {
+						[`guild.infractions.${ [message.author.id] }`]: {type, reason, time, moderator}
+					}
+				});
+				await message.author.send({
+					embeds: [{
+						description: `You have been warned in ${ message.guild.name }.`,
+						fields: [{
+							name: "Reason:",
+							value: reason
+						}],
+					}]
+				});
 				return;
 			}
 			await message.reply({
@@ -136,10 +155,30 @@ client.on("messageCreate", async (message) => {
 				ephemeral: true
 			});
 		}
+
 		if (message.content.includes("bad word")) {
+			const type="AutoMod";
+			const reason="Inappropriate language.";
+			const time=Math.floor((new Date()).getTime()/1000);
+			const moderator=client.user.tag;
 			message.delete();
 			if (automod.guild.config.automod.warn===true) {
-				// add warn to db
+				await db.updateOne({
+					"guild.id": message.guild.id,
+				}, {
+					$push: {
+						[`guild.infractions.${ [message.author.id] }`]: {type, reason, time, moderator}
+					}
+				});
+				await message.author.send({
+					embeds: [{
+						description: `You have been warned in ${ message.guild.name }.`,
+						fields: [{
+							name: "Reason:",
+							value: reason
+						}],
+					}]
+				});
 				return;
 			}
 			await message.author.send({
