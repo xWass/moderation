@@ -11,10 +11,10 @@ module.exports={
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command help`);
         let embed=new MessageEmbed()
             .setTitle(`Commands`)
-            .setColor('Green');
+            .setColor('GREEN');
         for (command of client.SlashCommands) {
-            if (!command[1].description) command[1].description="No description";
-            embed.addField(`${ command[1].name }`, `${command[1].description} \n </${command[1].name}:${command[1].id}>`);
+            if (!command[1].data.description) command[1].data.description="No description";
+            embed.addField(`${ command[1].data.name }`, `${command[1].data.description} \n </${command[1].data.name}:${command[1].data.id}>`);
         }
 
         await interaction.reply({
