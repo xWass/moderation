@@ -70,7 +70,7 @@ module.exports={
         try {
             await mem.send({
                 embeds: [{
-                    description: `You have been warned in ${ interaction.guild.name }.`,
+                    title: `You have been warned in ${ interaction.guild.name }.`,
                     fields: [{
                         name: "Reason:",
                         value: reason
