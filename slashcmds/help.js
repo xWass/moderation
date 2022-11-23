@@ -9,16 +9,16 @@ module.exports={
     
     async execute(interaction, client) {
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command help`);
-        let embed=new MessageEmbed()
-            .setTitle(`Commands`)
-            .setColor('GREEN');
-        for (command of client.SlashCommands) {
-            if (!command[1].data.description) command[1].data.description="No description";
-            embed.addField(`${ command[1].data.name }`, `${command[1].data.description} \n </${command[1].data.name}:${command[1].data.id}>`);
-        }
 
         await interaction.reply({
-            embeds: [embed],
+            embeds: [{
+                title: "Help",
+                fields: [
+                    {name: "Config", value: "Need help setting this up? Read below!", inline: true},
+                    {name: "Verify", value: "Set to Enable, select your channel and role, then the bot will automatically change permissions for that channel!\n\n*Note*: Once your verified role is set, you will need to give it to everyone who isnt verified.\n\nThe bot only handles perms for the verify channel, not the rest. That's your job."},
+                    {name: "Automod", value: "Set to Enable, then enable or disable automatic warns. This filters naughty words and invite links."},
+                ]
+            }],
             ephemeral: true
         });
     }
