@@ -8,8 +8,9 @@ Complete:
 - New option added to automod - warn: This allows admins to enable/disable automatic warning for automod triggers
 - Automod auto warn system completed
 - Added help command. fixed kinda
+- Added database management for logging
 
 In progress:
 - Filling in naughty words for automod. might .gitignore this one D:
-
-- I genuinely dont know what to do past this. Create an issue with a suggestion if you have anything.
+- Adding logging channel messages to moderation commands
+- Creation of events for logging (messageDelete, userUpdate, etc.)

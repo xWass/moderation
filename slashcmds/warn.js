@@ -53,8 +53,20 @@ module.exports={
                         ]
                     },
                     "config": {
-                        "automod": false,
-                        "verify": false
+                        "automod": {
+                            "status": false,
+                            "warn": false
+                        },
+                        "verify": {
+                            "status": false,
+                            "channel": null,
+                            "role": null
+                        },
+                        "logging": {
+                            "status": false,
+                            "channel": null,
+                            "level": null
+                        }
                     }
                 }
             });

@@ -54,14 +54,15 @@ module.exports={
                 });
                 return;
             }
-            const newArr=await memm.guild.infractions[mem.user.id].map(x => ({name: `${ x.type||"N/A" }`, value: `Reason: ${ x.reason }\nTime: <t:${ x.time }:f>`, inline: false})).reverse().slice(0, 10)
+            const newArr=await memm.guild.infractions[mem.user.id].map(x => ({name: `${ x.type||"N/A" }`, value: `Reason: ${ x.reason }\nTime: <t:${ x.time }:f>`, inline: false})).reverse().slice(0, 10);
             interaction.reply({
                 embeds: [{
                     description: `**${ mem.user.tag }'s infractions:**`,
                     fields: newArr,
                     footer: {
                         text: "Limited to the 10 most recent infractions."
-                    }
+                    },
+                    color: 'GREEN'
                 }]
             });
         }

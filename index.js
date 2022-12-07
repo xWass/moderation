@@ -191,4 +191,5 @@ client.on("messageCreate", async (message) => {
 		}
 	}
 });
+// new events for logging
 client.login(process.env.TOKEN);
