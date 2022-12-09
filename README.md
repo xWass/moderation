@@ -1,6 +1,6 @@
 # fresh moderation bot project, built on discord.js v13.*
 Complete: 
-- config.js rebuilt to implement subcommands.
+- Config command rebuilt to implement subcommands.
 - Verify command added through a slash command. Skipped legacy command handler, staying with slash
 - Role is now given to members who verify
 - Database modification for flexible verification channel and role ids
@@ -9,8 +9,11 @@ Complete:
 - Automod auto warn system completed
 - Added help command. fixed kinda
 - Added database management for logging
+- Added logging channel messages to moderation commands
+- Added logging for automod actions
+- Config command updated for altering logging
 
 In progress:
-- Filling in naughty words for automod. might .gitignore this one D:
-- Adding logging channel messages to moderation commands
+- Filling in naughty words for automod. might .gitignore this one later
 - Creation of events for logging (messageDelete, userUpdate, etc.)
+- Second level of AutoMod (for message deletions, nickname changes. Just a stricter level of Automod)

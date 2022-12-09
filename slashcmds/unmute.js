@@ -13,10 +13,14 @@ module.exports={
             .setName('reason')
             .setDescription('Reason for muting this user.')),
 
-    async execute(interaction) {
+    async execute(interaction, client) {
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command unmute`);
         const mem=await interaction.options.getMember('member')||null;
-        const res=await interaction.options.getString('reason')||'No reason specified.';
+        const reason=await interaction.options.getString('reason')||'No reason specified.';
+        const db=await client.db.collection('Infractions');
+        const time=Math.floor((new Date()).getTime()/1000);
+
+
 
         if (!interaction.member.permissions.has('MODERATE_MEMBERS')||!interaction.guild.me.permissions.has('MODERATE_MEMBERS')) {
             interaction.reply({
@@ -43,10 +47,36 @@ module.exports={
         }
 
         try {
-            await mem.timeout(0, res);
+            await mem.timeout(0, reason);
+            const logging=await db.findOne({
+                'guild.id': interaction.guild.id,
+                [`guild.config.logging`]: {
+                    $exists: true
+                }
+            });
+
+            if (logging.guild.config.logging.status===true) {
+                const channel=client.channels.cache.get(logging.guild.config.logging.channel);
+                channel.send({
+                    embeds: [{
+                        title: `Unmute`,
+                        fields: [
+                            {name: "Member:", value: `<@${ mem.id }>`, inline: true},
+                            {name: "Reason:", value: reason, inline: true},
+                            {name: "Time:", value: `<t:${ time }:f>`},
+                        ],
+                        footer: {
+                            text: `Moderator: ${ interaction.user.tag }`
+                        },
+                        color: 'GREEN'
+
+                    }]
+                });
+            }
+
             interaction.reply({
                 embeds: [{
-                    description: `<@${ mem.id }> has been unmuted! \nReason: ${ res }`,
+                    description: `<@${ mem.id }> has been unmuted! \nReason: ${ reason }`,
                     footer: {
                         text: `Moderator: ${ interaction.user.tag }`
                     },

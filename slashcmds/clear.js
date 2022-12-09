@@ -38,6 +38,31 @@ module.exports={
 
         try {
             interaction.channel.bulkDelete(amount, true);
+            const logging=await db.findOne({
+                'guild.id': interaction.guild.id,
+                [`guild.config.logging`]: {
+                    $exists: true
+                }
+            });
+
+            if (logging.guild.config.logging.status===true) {
+                const channel=client.channels.cache.get(logging.guild.config.logging.channel);
+                channel.send({
+                    embeds: [{
+                        title: `Clear`,
+                        fields: [
+                            {name: "Amount:", value: `${ amount }`, inline: true},
+                            {name: "Time:", value: `<t:${ time }:f>`},
+                        ],
+                        footer: {
+                            text: `Moderator: ${ interaction.user.tag }`
+                        },
+                        color: 'GREEN'
+
+                    }]
+                });
+            }
+
             interaction.reply({
                 embeds: [{
                     description: `${ amount } messages cleared!`,

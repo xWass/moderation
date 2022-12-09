@@ -93,6 +93,33 @@ module.exports={
 
         try {
             await mem.timeout(formattedTime, reason);
+            const logging=await db.findOne({
+                'guild.id': interaction.guild.id,
+                [`guild.config.logging`]: {
+                    $exists: true
+                }
+            });
+
+            if (logging.guild.config.logging.status===true) {
+                const channel=client.channels.cache.get(logging.guild.config.logging.channel);
+                channel.send({
+                    embeds: [{
+                        title: `Mute`,
+                        fields: [
+                            {name: "Member:", value: `<@${ mem.id }>`, inline: true},
+                            {name: "Reason:", value: reason, inline: true},
+                            {name: "Duration:", value: timee, inline: true},
+                            {name: "Time:", value: `<t:${ time }:f>`},
+                        ],
+                        footer: {
+                            text: `Moderator: ${ interaction.user.tag }`
+                        },
+                        color: 'GREEN'
+
+                    }]
+                });
+            }
+
             interaction.reply({
                 embeds: [{
                     description: `<@${ mem.id }> has been muted for ${ timee }! \nReason: ${ reason }`,

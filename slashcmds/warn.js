@@ -14,7 +14,7 @@ module.exports={
             .setDescription('Reason for warning this user.')),
 
     async execute(interaction, client) {
-        const type="Warn"
+        const type="Warn";
         const db=await client.db.collection('Infractions');
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command warn`);
         const mem=await interaction.options.getMember('member')||null;
@@ -40,7 +40,6 @@ module.exports={
                 color: 'GREEN'
             }],
         });
-
         // db stuff
         const warned=await db.findOne({"guild.id": interaction.guild.id});
         if (!warned) {
@@ -79,14 +78,39 @@ module.exports={
                 }
             });
         }
+        const logging=await db.findOne({
+            'guild.id': interaction.guild.id,
+            [`guild.config.logging`]: {
+                $exists: true
+            }
+        });
+
+        if (logging.guild.config.logging.status===true) {
+            const channel=client.channels.cache.get(logging.guild.config.logging.channel);
+            channel.send({
+                embeds: [{
+                    title: `Warn`,
+                    fields: [
+                        {name: "Member:", value: `<@${ mem.id }>`, inline: true},
+                        {name: "Reason:", value: reason, inline: true},
+                        {name: "Time:", value: `<t:${ time }:f>`},
+                    ],
+                    footer: {
+                        text: `Moderator: ${ interaction.user.tag }`
+                    },
+                    color: 'GREEN'
+
+                }]
+            });
+        }
+
         try {
             await mem.send({
                 embeds: [{
                     title: `You have been warned in ${ interaction.guild.name }.`,
-                    fields: [{
-                        name: "Reason:",
-                        value: reason
-                    }],
+                    fields: [
+                        {name: "Reason:", value: reason}
+                    ],
                 }]
             });
         } catch (error) {

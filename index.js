@@ -118,11 +118,15 @@ client.on("messageCreate", async (message) => {
 			$exists: true
 		}
 	});
+	const logging=await db.findOne({
+		'guild.id': message.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
 
 	const reg=(/\b(?:discord\.gg\/[a-zA-Z]+|(?:(?:www|canary|ptb)\.)?discord(?:app)?\.com\/invite\/[a-zA-Z]+)\b/gi);
-
 	if (automod.guild.config.automod.status===true) {
-
 		if (message.content.match(reg)) {
 			const type="AutoMod";
 			const reason="Server Advertising.";
@@ -137,16 +141,39 @@ client.on("messageCreate", async (message) => {
 						[`guild.infractions.${ [message.author.id] }`]: {type, reason, time, moderator}
 					}
 				});
-				await message.author.send({
-					embeds: [{
-						description: `You have been warned in ${ message.guild.name }.`,
-						fields: [{
-							name: "Reason:",
-							value: reason
-						}],
-					}]
-				});
-				return;
+				if (logging.guild.config.logging.status===true) {
+					const channel=client.channels.cache.get(logging.guild.config.logging.channel);
+					channel.send({
+						embeds: [{
+							title: `AutoMod`,
+							fields: [
+								{name: "Member:", value: `<@${ message.author.id }>`, inline: true},
+								{name: "Reason:", value: reason, inline: true},
+								{name: "Content:", value: `${ message.content }`},
+								{name: "Time:", value: `<t:${ time }:f>`},
+							],
+							footer: {
+								text: `Moderator: ${ client.user.tag }`
+							},
+							color: 'GREEN'
+						}]
+					});
+				}
+
+				try {
+					await message.author.send({
+						embeds: [{
+							description: `You have been warned in ${ message.guild.name }.`,
+							fields: [{
+								name: "Reason:",
+								value: reason
+							}],
+						}]
+					});
+					return;
+				} catch {
+					return
+				}
 			}
 			await message.reply({
 				embeds: [{
@@ -155,8 +182,22 @@ client.on("messageCreate", async (message) => {
 				ephemeral: true
 			});
 		}
+		const badWords=['fuck', 'faggot', 'nigger', 'heck']; // yea this is part of the bot, get over it
+		const text=message.content.split(/ +/g);
+		function findMatchingValues(arr1, arr2) {
+			let matchingValues=[];
+			for (let i=0; i<arr1.length; i++) {
+				for (let j=0; j<arr2.length; j++) {
+					if (arr1[i]===arr2[j]) {
+						matchingValues.push(arr1[i]);
+					}
+				}
+			}
+			return matchingValues;
+		}
 
-		if (message.content.includes("bad word")) {
+		const found=findMatchingValues(badWords, text)
+		if (found[0] !== undefined) {
 			const type="AutoMod";
 			const reason="Inappropriate language.";
 			const time=Math.floor((new Date()).getTime()/1000);
@@ -170,16 +211,39 @@ client.on("messageCreate", async (message) => {
 						[`guild.infractions.${ [message.author.id] }`]: {type, reason, time, moderator}
 					}
 				});
-				await message.author.send({
-					embeds: [{
-						description: `You have been warned in ${ message.guild.name }.`,
-						fields: [{
-							name: "Reason:",
-							value: reason
-						}],
-					}]
-				});
-				return;
+				if (logging.guild.config.logging.status===true) {
+					const channel=client.channels.cache.get(logging.guild.config.logging.channel);
+					channel.send({
+						embeds: [{
+							title: `AutoMod`,
+							fields: [
+								{name: "Member:", value: `<@${ message.author.id }>`, inline: true},
+								{name: "Reason:", value: reason, inline: true},
+								{name: "Content:", value: `${message.content}`},
+								{name: "Time:", value: `<t:${ time }:f>`},
+							],
+							footer: {
+								text: `Moderator: ${ client.user.tag }`
+							},
+							color: 'GREEN'
+						}]
+					});
+				}
+
+				try {
+					await message.author.send({
+						embeds: [{
+							description: `You have been warned in ${ message.guild.name }.`,
+							fields: [{
+								name: "Reason:",
+								value: reason
+							}],
+						}]
+					});
+					return;
+				} catch {
+					return;
+				}
 			}
 			await message.author.send({
 				embeds: [{
@@ -192,4 +256,6 @@ client.on("messageCreate", async (message) => {
 	}
 });
 // new events for logging
+
+
 client.login(process.env.TOKEN);
