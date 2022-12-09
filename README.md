@@ -15,5 +15,5 @@ Complete:
 
 In progress:
 - Filling in naughty words for automod. might .gitignore this one later
-- Creation of events for logging (messageDelete, userUpdate, etc.)
+- Creation of events for logging (messageDelete, guildMemberUpdate, etc.)
 - Second level of AutoMod (for message deletions, nickname changes. Just a stricter level of Automod)
