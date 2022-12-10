@@ -12,8 +12,9 @@ Complete:
 - Added logging channel messages to moderation commands
 - Added logging for automod actions
 - Config command updated for altering logging
+- Creation of events for logging (messageDelete, guildMemberUpdate, etc.)
+- Second level of AutoMod (for message deletions, nickname changes. Just a stricter level of Automod)
 
 In progress:
 - Filling in naughty words for automod. might .gitignore this one later
-- Creation of events for logging (messageDelete, guildMemberUpdate, etc.)
-- Second level of AutoMod (for message deletions, nickname changes. Just a stricter level of Automod)
+- Got some optimizations to do with this, and might move events to a sub folder for a cleaner setup.

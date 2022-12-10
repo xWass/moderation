@@ -1,5 +1,6 @@
 const fs=require("fs");
 const chalk=require("chalk");
+const deepDiff=require("deep-diff");
 const {MongoClient}=require("mongodb");
 const {
 	Client, Collection, Intents, MessageEmbed,
@@ -25,6 +26,7 @@ const commandFiles=fs.readdirSync("./slashcmds").filter((file) => file.endsWith(
 
 const {REST}=require("@discordjs/rest");
 const {Routes}=require("discord-api-types/v9");
+const {channel}=require("diagnostics_channel");
 
 const databaseConnect=async () => {
 	const mongoClient=new MongoClient(process.env.MONGO);
@@ -89,10 +91,29 @@ client.on("interactionCreate", async (interaction) => {
 		});
 	}
 });
+
+
+const time=Math.floor((new Date()).getTime()/1000);
+
 client.on("messageCreate", async (message) => {
+	const db=await client.db.collection('Infractions');
+	const automod=await db.findOne({
+		'guild.id': message.guild.id,
+		[`guild.config.automod`]: {
+			$exists: true
+		}
+	});
+	const logging=await db.findOne({
+		'guild.id': message.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+
 	if (message.author.bot) return;
 	if (message.channel.type==="DM") return;
-	const db=await client.db.collection('Infractions');
 	const found=await db.findOne({"guild.id": message.guild.id})||null;
 	if (!found) {
 		await db.insertOne({
@@ -112,25 +133,11 @@ client.on("messageCreate", async (message) => {
 		});
 	}
 
-	const automod=await db.findOne({
-		'guild.id': message.guild.id,
-		[`guild.config.automod`]: {
-			$exists: true
-		}
-	});
-	const logging=await db.findOne({
-		'guild.id': message.guild.id,
-		[`guild.config.logging`]: {
-			$exists: true
-		}
-	});
-
 	const reg=(/\b(?:discord\.gg\/[a-zA-Z]+|(?:(?:www|canary|ptb)\.)?discord(?:app)?\.com\/invite\/[a-zA-Z]+)\b/gi);
 	if (automod.guild.config.automod.status===true) {
 		if (message.content.match(reg)) {
 			const type="AutoMod";
 			const reason="Server Advertising.";
-			const time=Math.floor((new Date()).getTime()/1000);
 			const moderator=client.user.tag;
 			message.delete();
 			if (automod.guild.config.automod.warn===true) {
@@ -142,8 +149,7 @@ client.on("messageCreate", async (message) => {
 					}
 				});
 				if (logging.guild.config.logging.status===true) {
-					const channel=client.channels.cache.get(logging.guild.config.logging.channel);
-					channel.send({
+					chan.send({
 						embeds: [{
 							title: `AutoMod`,
 							fields: [
@@ -172,7 +178,7 @@ client.on("messageCreate", async (message) => {
 					});
 					return;
 				} catch {
-					return
+					return;
 				}
 			}
 			await message.reply({
@@ -196,11 +202,11 @@ client.on("messageCreate", async (message) => {
 			return matchingValues;
 		}
 
-		const found=findMatchingValues(badWords, text)
-		if (found[0] !== undefined) {
+		const found=findMatchingValues(badWords, text);
+		if (found[0]!==undefined) {
 			const type="AutoMod";
 			const reason="Inappropriate language.";
-			const time=Math.floor((new Date()).getTime()/1000);
+
 			const moderator=client.user.tag;
 			message.delete();
 			if (automod.guild.config.automod.warn===true) {
@@ -212,14 +218,14 @@ client.on("messageCreate", async (message) => {
 					}
 				});
 				if (logging.guild.config.logging.status===true) {
-					const channel=client.channels.cache.get(logging.guild.config.logging.channel);
-					channel.send({
+
+					chan.send({
 						embeds: [{
 							title: `AutoMod`,
 							fields: [
 								{name: "Member:", value: `<@${ message.author.id }>`, inline: true},
 								{name: "Reason:", value: reason, inline: true},
-								{name: "Content:", value: `${message.content}`},
+								{name: "Content:", value: `${ message.content }`},
 								{name: "Time:", value: `<t:${ time }:f>`},
 							],
 							footer: {
@@ -255,7 +261,230 @@ client.on("messageCreate", async (message) => {
 		}
 	}
 });
-// new events for logging
+
+client.on("channelCreate", async (channel) => {
+	const db=await client.db.collection('Infractions');
+	const logging=await db.findOne({
+		'guild.id': channel.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+	if (logging.guild.config.logging.level==="High") {
+		chan.send({
+			embeds: [{
+				title: `Channel Created`,
+				fields: [
+					{name: "Channel:", value: `<#${ channel.id }>`, inline: true},
+					{name: "Time:", value: `<t:${ time }:f>`},
+				],
+				footer: {
+					text: `Moderator: ${ client.user.tag }`
+				},
+				color: 'GREEN'
+			}]
+		});
+	}
+});
+
+client.on("channelDelete", async (channel) => {
+	const db=await client.db.collection('Infractions');
+	const logging=await db.findOne({
+		'guild.id': channel.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+	if (logging.guild.config.logging.level==="High") {
+		if (logging.guild.config.logging.level==="High") {
+			chan.send({
+				embeds: [{
+					title: `Channel Deleted`,
+					fields: [
+						{name: "Channel:", value: `#${ channel.name }`, inline: true},
+						{name: "Time:", value: `<t:${ time }:f>`},
+					],
+					footer: {
+						text: `Moderator: ${ client.user.tag }`
+					},
+					color: 'GREEN'
+				}]
+			});
+		}
+
+	}
+});
+client.on("messageDelete", async (message) => {
+	if (message.author.bot) return;
+	const db=await client.db.collection('Infractions');
+	const logging=await db.findOne({
+		'guild.id': message.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+	if (logging.guild.config.logging.level==="High") {
+			chan.send({
+				embeds: [{
+					title: `Message Deleted`,
+					fields: [
+						{name: "Member", value: `${ message.author || "Unavailable"}`},
+						{name: "Content:", value: `${ message.content || "Unavailable"}`, inline: true},
+						{name: "Time:", value: `<t:${ time }:f>`},
+					],
+					footer: {
+						text: `Moderator: ${ client.user.tag }`
+					},
+					color: 'GREEN'
+				}]
+			});
+	}
+});
+client.on("messageUpdate", async (oldMessage, newMessage) => {
+	const db=await client.db.collection('Infractions');
+	const logging=await db.findOne({
+		'guild.id': oldMessage.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+	if (logging.guild.config.logging.level==="High") {
+		chan.send({
+			embeds: [{
+				title: `Message Edited`,
+				fields: [
+					{name: "Member", value: `${ newMessage.author }`},
+					{name: "Old Content:", value: `${ oldMessage.content }`, inline: true},
+					{name: "New Content:", value: `${ newMessage.content }`, inline: true},
+					{name: "Time:", value: `<t:${ time }:f>`},
+				],
+				footer: {
+					text: `Moderator: ${ client.user.tag }`
+				},
+				color: 'GREEN'
+			}]
+		});
+
+	}
+});
+client.on("roleCreate", async (role) => {
+	const db=await client.db.collection('Infractions');
+	const logging=await db.findOne({
+		'guild.id': role.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+	if (logging.guild.config.logging.level==="High") {
+		chan.send({
+			embeds: [{
+				title: `Role Created`,
+				fields: [
+					{name: "Role:", value: `<@&${ role.id }>`},
+					{name: "Time:", value: `<t:${ time }:f>`},
+				],
+				footer: {
+					text: `Moderator: ${ client.user.tag }`
+				},
+				color: 'GREEN'
+			}]
+		});
+
+	}
+});
+client.on("roleDelete", async (role) => {
+	const db=await client.db.collection('Infractions');
+	const logging=await db.findOne({
+		'guild.id': role.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+	if (logging.guild.config.logging.level==="High") {
+		chan.send({
+			embeds: [{
+				title: `Role Deleted`,
+				fields: [
+					{name: "Role:", value: `<@&${ role.name }>`},
+					{name: "Time:", value: `<t:${ time }:f>`},
+				],
+				footer: {
+					text: `Moderator: ${ client.user.tag }`
+				},
+				color: 'GREEN'
+			}]
+		});
+
+	}
+});
+client.on("roleUpdate", async (oldRole, newRole) => {
+	const db=await client.db.collection('Infractions');
+	const logging=await db.findOne({
+		'guild.id': oldRole.guild.id,
+		[`guild.config.logging`]: {
+			$exists: true
+		}
+	});
+	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+	if (logging.guild.config.logging.level==="High") {
+		chan.send({
+			embeds: [{
+				title: `Role Updated`,
+				description: "For more information, check Audit Logs",
+				fields: [
+					{name: "Role:", value: `<@&${newRole.id}>`, inline: true},
+					{name: "Time:", value: `<t:${ time }:f>`},
+				],
+				footer: {
+					text: `Moderator: ${ client.user.tag }`
+				},
+				color: 'GREEN'
+			}]
+		})
+	}
+});
+client.on("guildUpdate", async (oldGuild, newGuild) => {
+	if (logging.guild.config.logging.level==="High") {
+		const db=await client.db.collection('Infractions');
+		const logging=await db.findOne({
+			'guild.id': oldRole.guild.id,
+			[`guild.config.logging`]: {
+				$exists: true
+			}
+		});
+		const chan=client.channels.cache.get(logging.guild.config.logging.channel);
+
+		if (logging.guild.config.logging.level==="High") {
+			chan.send({
+				embeds: [{
+					title: `Guild Updated`,
+					description: "For more information, check Audit Logs",
+					fields: [
+						{name: "Time:", value: `<t:${ time }:f>`},
+					],
+					footer: {
+						text: `Moderator: ${ client.user.tag }`
+					},
+					color: 'GREEN'
+				}]
+			});
+		}
+
+	}
+});
 
 
 client.login(process.env.TOKEN);
