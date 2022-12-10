@@ -1,6 +1,5 @@
 const fs=require("fs");
 const chalk=require("chalk");
-const deepDiff=require("deep-diff");
 const {MongoClient}=require("mongodb");
 const {
 	Client, Collection, Intents, MessageEmbed,
