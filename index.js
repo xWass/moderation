@@ -25,7 +25,6 @@ const commandFiles=fs.readdirSync("./slashcmds").filter((file) => file.endsWith(
 
 const {REST}=require("@discordjs/rest");
 const {Routes}=require("discord-api-types/v9");
-const {channel}=require("diagnostics_channel");
 
 const databaseConnect=async () => {
 	const mongoClient=new MongoClient(process.env.MONGO);
@@ -58,7 +57,7 @@ const rest=new REST({version: "9"}).setToken(process.env.TOKEN);
 
 client.on("ready", async () => {
 	client.user.setActivity("trouble 👀", {type: "LISTENING"});
-	databaseConnect();
+	await databaseConnect();
 });
 
 client.once("ready", async () => {
@@ -111,8 +110,7 @@ client.on("messageCreate", async (message) => {
 	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
 
 
-	if (message.author.bot) return;
-	if (message.channel.type==="DM") return;
+	if (message.author.bot||message.channel.type==="DM") return;
 	const found=await db.findOne({"guild.id": message.guild.id})||null;
 	if (!found) {
 		await db.insertOne({
@@ -318,7 +316,7 @@ client.on("channelDelete", async (channel) => {
 	}
 });
 client.on("messageDelete", async (message) => {
-	if (message.author.bot) return;
+	if (message.author.bot||message.channel.type==="DM") return;
 	const db=await client.db.collection('Infractions');
 	const logging=await db.findOne({
 		'guild.id': message.guild.id,
@@ -329,23 +327,24 @@ client.on("messageDelete", async (message) => {
 	const chan=client.channels.cache.get(logging.guild.config.logging.channel);
 
 	if (logging.guild.config.logging.level==="High") {
-			chan.send({
-				embeds: [{
-					title: `Message Deleted`,
-					fields: [
-						{name: "Member", value: `${ message.author || "Unavailable"}`},
-						{name: "Content:", value: `${ message.content || "Unavailable"}`, inline: true},
-						{name: "Time:", value: `<t:${ time }:f>`},
-					],
-					footer: {
-						text: `Moderator: ${ client.user.tag }`
-					},
-					color: 'GREEN'
-				}]
-			});
+		chan.send({
+			embeds: [{
+				title: `Message Deleted`,
+				fields: [
+					{name: "Member", value: `${ message.author||"Unavailable" }`},
+					{name: "Content:", value: `${ message.content||"Unavailable" }`, inline: true},
+					{name: "Time:", value: `<t:${ time }:f>`},
+				],
+				footer: {
+					text: `Moderator: ${ client.user.tag }`
+				},
+				color: 'GREEN'
+			}]
+		});
 	}
 });
 client.on("messageUpdate", async (oldMessage, newMessage) => {
+	if (oldMessage.author.bot||oldMessage.channel.type==="DM") return;
 	const db=await client.db.collection('Infractions');
 	const logging=await db.findOne({
 		'guild.id': oldMessage.guild.id,
@@ -360,9 +359,9 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
 			embeds: [{
 				title: `Message Edited`,
 				fields: [
-					{name: "Member", value: `${ newMessage.author }`},
-					{name: "Old Content:", value: `${ oldMessage.content }`, inline: true},
-					{name: "New Content:", value: `${ newMessage.content }`, inline: true},
+					{name: "Member", value: `${ newMessage.author||"Unavailable" }`},
+					{name: "Old Content:", value: `${ oldMessage.content||"Unavailable" }`, inline: true},
+					{name: "New Content:", value: `${ newMessage.content||"Unavailable" } `, inline: true},
 					{name: "Time:", value: `<t:${ time }:f>`},
 				],
 				footer: {
@@ -444,7 +443,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
 				title: `Role Updated`,
 				description: "For more information, check Audit Logs",
 				fields: [
-					{name: "Role:", value: `<@&${newRole.id}>`, inline: true},
+					{name: "Role:", value: `<@&${ newRole.id }>`, inline: true},
 					{name: "Time:", value: `<t:${ time }:f>`},
 				],
 				footer: {
@@ -452,7 +451,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
 				},
 				color: 'GREEN'
 			}]
-		})
+		});
 	}
 });
 client.on("guildUpdate", async (oldGuild, newGuild) => {
