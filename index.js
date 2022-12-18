@@ -187,8 +187,8 @@ client.on("messageCreate", async (message) => {
 				ephemeral: true
 			});
 		}
-		const badWords=['fuck', 'faggot', 'nigger', 'heck']; // yea this is part of the bot, get over it
-		const text=message.content.split(/ +/g);
+		const badWords=['faggot', 'nigger', 'heck']; // yea this is part of the bot, get over it
+		const text=message.content.toLowerCase().split(/ +/g);
 		function findMatchingValues(arr1, arr2) {
 			let matchingValues=[];
 			for (let i=0; i<arr1.length; i++) {
