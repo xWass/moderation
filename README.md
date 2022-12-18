@@ -18,3 +18,4 @@ Complete:
 In progress:
 - Filling in naughty words for automod. might .gitignore this one later
 - Got some optimizations to do with this, and might move events to a sub folder for a cleaner setup.
+- Config command rebuilding for ease of use
