@@ -62,7 +62,7 @@ module.exports={
                     .setCustomId('automod')
                     .setLabel('Automod')
                     .setStyle('SUCCESS'),
-        )
+            )
             .addComponents(
                 new MessageButton()
                     .setCustomId('logging')
@@ -78,7 +78,12 @@ module.exports={
 
         interaction.reply({
             embeds: [{
-                title: "test"
+                title: "test",
+                fields: [
+                    {name: "Verification", value: "Select Verification to enable/modify server verification on member join.", inline: true},
+                    {name: "Automod", value: "Select Automod to enable/modify this server's automatic moderation strictness", inline: true},
+                    {name: "Logging", value: "Select logging to enable/modify this server's logging strictness.", inline: true}
+                ]
             }],
             components: [buttons]
         });
