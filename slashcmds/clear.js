@@ -11,10 +11,10 @@ module.exports={
             .setRequired(true)
             .setDescription('Amount of messages to clear.')),
 
-    async execute(interaction) {
+    async execute(interaction, client) {
         console.log(`${ chalk.greenBright('[EVENT ACKNOWLEDGED]') } interactionCreate with command clear`);
         const amount=await interaction.options.getInteger('amount')||null;
-
+        const db = await client.db.collection("Infractions");
         if (!interaction.member.permissions.has('MANAGE_MESSAGES')||!interaction.guild.me.permissions.has('MANAGE_MESSAGES')) {
             interaction.reply({
                 embeds: [{
