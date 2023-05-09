@@ -442,8 +442,8 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
     });
     const chan = client.channels.cache.get(
         logging.guild.config.logging.channel
-    );
-
+	);
+	if (oldMessage.content===newMessage.content) return;
     if (logging.guild.config.logging.level === "High") {
         chan.send({
             embeds: [
