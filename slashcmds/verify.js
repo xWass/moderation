@@ -5,30 +5,6 @@ const chalk = require("chalk");
 
 const letters = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789";
 
-function generateCaptchaString() {
-    let str = "";
-
-    for (let i = 0; i < 6; i++)
-        str += `${letters[Math.floor(Math.random() * letters.length)]} `;
-
-    return str;
-}
-
-function createCaptcha() {
-    const ctx = createCanvas(500, 200).getContext("2d");
-
-    ctx.fillStyle = "#303434";
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-    const captchaString = generateCaptchaString();
-
-    ctx.font = "50px Sans";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText(captchaString, 250, 120);
-
-    return { captchaString, buffer: ctx.canvas.toBuffer() };
-}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -42,13 +18,40 @@ module.exports = {
             )} interactionCreate with command infractions`
         );
         const db = await client.db.collection("Infractions");
-        const status = await db.findOne({
+        const find = await db.findOne({
             "guild.id": interaction.guild.id,
             [`guild.config.verify.status`]: {
                 $exists: true,
             },
         });
-        console.log(status.guild.config.verify.status)
+        const status=find.guild.config.verify.status
+        if (status===false) return;
+        function generateCaptchaString() {
+            let str = "";
+
+            for (let i = 0; i < 6; i++)
+                str += `${
+                    letters[Math.floor(Math.random() * letters.length)]
+                } `;
+
+            return str;
+        }
+
+        function createCaptcha() {
+            const ctx = createCanvas(500, 200).getContext("2d");
+
+            ctx.fillStyle = "#303434";
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+            const captchaString = generateCaptchaString();
+
+            ctx.font = "50px Sans";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.fillText(captchaString, 250, 120);
+
+            return { captchaString, buffer: ctx.canvas.toBuffer() };
+        }
 
         const { captchaString, buffer } = createCaptcha();
         const attachment = new MessageAttachment(buffer, "captcha.png");
