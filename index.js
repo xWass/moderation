@@ -442,8 +442,8 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
     });
     const chan = client.channels.cache.get(
         logging.guild.config.logging.channel
-	);
-	if (oldMessage.content===newMessage.content) return;
+    );
+    if (oldMessage.content === newMessage.content) return;
     if (logging.guild.config.logging.level === "High") {
         chan.send({
             embeds: [
@@ -456,7 +456,10 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
                         },
                         {
                             name: "Old Content:",
-                            value: `${oldMessage.content || "Unavailable*\n*This might have been a post with just an image."}`,
+                            value: `${
+                                oldMessage.content ||
+                                "Unavailable*\n*This might have been a post with just an image."
+                            }`,
                             inline: true,
                         },
                         {
@@ -571,7 +574,15 @@ client.on("roleUpdate", async (oldRole, newRole) => {
     }
 });
 client.on("guildUpdate", async (oldGuild, newGuild) => {
-    console.log(newGuild)
+    console.log(newGuild);
+    return;
+    const db = await client.db.collection("Infractions");
+    const logging = await db.findOne({
+        "guild.id": newGuild.guild.id,
+        [`guild.config.logging`]: {
+            $exists: true,
+        },
+    });
     if (logging.guild.config.logging.level === "High") {
         const db = await client.db.collection("Infractions");
         const logging = await db.findOne({

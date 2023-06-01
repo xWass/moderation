@@ -42,6 +42,14 @@ module.exports = {
             )} interactionCreate with command infractions`
         );
         const db = await client.db.collection("Infractions");
+        const status = await db.findOne({
+            "guild.id": interaction.guild.id,
+            [`guild.config.verify.status`]: {
+                $exists: true,
+            },
+        });
+        console.log(status)
+
         const { captchaString, buffer } = createCaptcha();
         const attachment = new MessageAttachment(buffer, "captcha.png");
 
