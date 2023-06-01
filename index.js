@@ -571,6 +571,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
     }
 });
 client.on("guildUpdate", async (oldGuild, newGuild) => {
+    console.log(newGuild)
     if (logging.guild.config.logging.level === "High") {
         const db = await client.db.collection("Infractions");
         const logging = await db.findOne({
