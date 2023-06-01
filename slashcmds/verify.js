@@ -27,9 +27,12 @@ module.exports = {
         const status=find.guild.config.verify.status
         if (status===false) {
             interaction.reply({
-                embeds: [{
-                    title: "This command is not enabled in this server."
-                }]
+                embeds: [
+                    {
+                        title: "This command is not enabled in this server.",
+                    },
+                ],
+                ephemeral: true,
             });
             return;
         }

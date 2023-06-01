@@ -37,6 +37,7 @@ module.exports = {
                         },
                     },
                 ],
+                ephemeral: true,
             });
             return;
         }
@@ -48,6 +49,7 @@ module.exports = {
                             "You can only delete 100 messages for now...",
                     },
                 ],
+                ephemeral: true,
             });
             return;
         }

@@ -32,16 +32,15 @@ module.exports = {
         const moderator = interaction.user.tag;
         const time = Math.floor(new Date().getTime() / 1000);
 
-        if (
-            !interaction.member.permissions.has("MANAGE_MESSAGES") ||
-            !interaction.guild.me.permissions.has("MANAGE_MESSAGES")
-        ) {
+        if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
             interaction.reply({
                 embeds: [
                     {
-                        description: "You are not a moderator!",
+                        description:
+                            "Either you or I are missing the correct permissions (MANAGE_MESSAGES) to perform this action",
                     },
                 ],
+                ephemeral: true,
             });
             return;
         }
