@@ -15,7 +15,7 @@ module.exports = {
         console.log(
             `${chalk.greenBright(
                 "[EVENT ACKNOWLEDGED]"
-            )} interactionCreate with command infractions`
+            )} interactionCreate with command verify`
         );
         const db = await client.db.collection("Infractions");
         const find = await db.findOne({
@@ -25,7 +25,14 @@ module.exports = {
             },
         });
         const status=find.guild.config.verify.status
-        if (status===false) return;
+        if (status===false) {
+            interaction.reply({
+                embeds: [{
+                    title: "This command is not enabled in this server."
+                }]
+            });
+            return;
+        }
         function generateCaptchaString() {
             let str = "";
 
