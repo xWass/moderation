@@ -92,7 +92,7 @@ client.on("interactionCreate", async (interaction) => {
         interaction.reply({
             embeds: [
                 {
-                    description: `An error has occurred! Message <@928624781731983380> (xWass#5848) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${error}\`\`\``,
+                    description: `An error has occurred! Message <@928624781731983380> (xWass#0001) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${error}\`\`\``,
                 },
             ],
             ephemeral: true,
@@ -222,7 +222,7 @@ client.on("messageCreate", async (message) => {
                 ephemeral: true,
             });
         }
-        const badWords = ["faggot", "nigger", "heck"]; // yea this is part of the bot, get over it
+        const badWords = ["faggot", "nigger"]; // yea this is part of the bot, get over it. more words in the future
         const text = message.content.toLowerCase().split(/ +/g);
         function findMatchingValues(arr1, arr2) {
             let matchingValues = [];
@@ -456,7 +456,7 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
                         },
                         {
                             name: "Old Content:",
-                            value: `${oldMessage.content || "Unavailable"}`,
+                            value: `${oldMessage.content || "Unavailable*\n*This might have been a post with just an image."}`,
                             inline: true,
                         },
                         {

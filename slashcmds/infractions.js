@@ -21,18 +21,12 @@ module.exports = {
         );
         const mem = (await interaction.options.getMember("member")) || null;
 
-        if (
-            !interaction.member.permissions.has("MANAGE_MESSAGES") ||
-            !interaction.guild.me.permissions.has("MANAGE_MESSAGES")
-        ) {
+        if (!interaction.member.permissions.has("KICK_MEMBERS")) {
             interaction.reply({
                 embeds: [
                     {
                         description:
-                            "Either you or I are missing the correct permissions (MANAGE_MESSAGES) to perform this action",
-                        footer: {
-                            text: "Check my role's permissions and make sure I have the permission to Ban Members",
-                        },
+                            "You are missing the correct permissions (KICK_MEMBERS) to perform this action.",
                     },
                 ],
             });

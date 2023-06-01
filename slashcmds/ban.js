@@ -102,7 +102,7 @@ module.exports = {
                         description:
                             "Something went wrong! Check your server's role order, or stop trying to ban the owner!",
                         footer: {
-                            text: "Make sure my highest role is above whoever you are trying to unmute.",
+                            text: "Make sure my highest role is above whoever you are trying to ban.",
                         },
                     },
                 ],
@@ -163,7 +163,7 @@ module.exports = {
             interaction.reply({
                 embeds: [
                     {
-                        description: `Something went very wrong. Send this error to xWass#5848! \n\`\`\`${err}\`\`\``,
+                        description: `Something went very wrong. Send this error to xWass#0001! \n\`\`\`${err}\`\`\``,
                     },
                 ],
             });

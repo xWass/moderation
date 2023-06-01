@@ -42,7 +42,7 @@ module.exports = {
                         description:
                             "Either you or I are missing the correct permissions (KICK_MEMBERS) to perform this action",
                         footer: {
-                            text: "Check my role's permissions and make sure I have the permission to Ban Members",
+                            text: "Check my role's permissions and make sure I have the permission to Kick Members",
                         },
                     },
                 ],
@@ -57,7 +57,7 @@ module.exports = {
                         description:
                             "Something went wrong! Check your server's role order, or stop trying to kick the owner!",
                         footer: {
-                            text: "Make sure my highest role is above whoever you are trying to unmute.",
+                            text: "Make sure my highest role is above whoever you are trying to kick.",
                         },
                     },
                 ],
@@ -162,7 +162,7 @@ module.exports = {
             interaction.reply({
                 embeds: [
                     {
-                        description: `Something went very wrong. Send this error to xWass#5848! \n\`\`\`${err}\`\`\``,
+                        description: `Something went very wrong. Send this error to xWass#0001! \n\`\`\`${err}\`\`\``,
                     },
                 ],
             });

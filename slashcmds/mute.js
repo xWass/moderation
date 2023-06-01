@@ -178,7 +178,7 @@ module.exports = {
             interaction.reply({
                 embeds: [
                     {
-                        description: `Something went very wrong. Send this error to xWass#5848! \n\`\`\`${err}\`\`\``,
+                        description: `Something went very wrong. Send this error to xWass#0001! \n\`\`\`${err}\`\`\``,
                     },
                 ],
             });

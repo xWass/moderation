@@ -33,7 +33,7 @@ module.exports = {
                         description:
                             "Either you or I are missing the correct permissions (MANAGE_MESSAGES) to perform this action",
                         footer: {
-                            text: "Check my role's permissions and make sure I have the permission to Ban Members",
+                            text: "Check my role's permissions and make sure I have the permission to Manage Messages",
                         },
                     },
                 ],
@@ -104,7 +104,7 @@ module.exports = {
             interaction.reply({
                 embeds: [
                     {
-                        description: `Something went very wrong. Send this error to xWass#5848! \n\`\`\`${err}\`\`\``,
+                        description: `Something went very wrong. Send this error to xWass#0001! \n\`\`\`${err}\`\`\``,
                     },
                 ],
                 ephemeral: true,
