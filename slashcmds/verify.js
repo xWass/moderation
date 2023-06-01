@@ -48,7 +48,7 @@ module.exports = {
                 $exists: true,
             },
         });
-        console.log(status)
+        console.log(status.gild.config.verify.status)
 
         const { captchaString, buffer } = createCaptcha();
         const attachment = new MessageAttachment(buffer, "captcha.png");

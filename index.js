@@ -595,21 +595,19 @@ client.on("guildUpdate", async (oldGuild, newGuild) => {
             logging.guild.config.logging.channel
         );
 
-        if (logging.guild.config.logging.level === "High") {
-            chan.send({
-                embeds: [
-                    {
-                        title: `Guild Updated`,
-                        description: "For more information, check Audit Logs",
-                        fields: [{ name: "Time:", value: `<t:${time}:f>` }],
-                        footer: {
-                            text: `Moderator: ${client.user.tag}`,
-                        },
-                        color: "GREEN",
+        chan.send({
+            embeds: [
+                {
+                    title: `Guild Updated`,
+                    description: "For more information, check Audit Logs",
+                    fields: [{ name: "Time:", value: `<t:${time}:f>` }],
+                    footer: {
+                        text: `Moderator: ${client.user.tag}`,
                     },
-                ],
-            });
-        }
+                    color: "GREEN",
+                },
+            ],
+        });
     }
 });
 
