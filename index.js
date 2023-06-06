@@ -100,9 +100,9 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-const time = Math.floor(new Date().getTime() / 1000);
 
 client.on("messageCreate", async (message) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     const db = await client.db.collection("Infractions");
     const automod = await db.findOne({
         "guild.id": message.guild.id,
@@ -322,6 +322,7 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("channelCreate", async (channel) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
         "guild.id": channel.guild.id,
@@ -357,6 +358,7 @@ client.on("channelCreate", async (channel) => {
 });
 
 client.on("channelDelete", async (channel) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
         "guild.id": channel.guild.id,
@@ -393,6 +395,7 @@ client.on("channelDelete", async (channel) => {
     }
 });
 client.on("messageDelete", async (message) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     if (message.author.bot || message.channel.type === "DM") return;
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
@@ -432,6 +435,7 @@ client.on("messageDelete", async (message) => {
     }
 });
 client.on("messageUpdate", async (oldMessage, newMessage) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     if (oldMessage.author.bot || oldMessage.channel.type === "DM") return;
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
@@ -479,6 +483,7 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
     }
 });
 client.on("roleCreate", async (role) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
         "guild.id": role.guild.id,
@@ -509,6 +514,7 @@ client.on("roleCreate", async (role) => {
     }
 });
 client.on("roleDelete", async (role) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
         "guild.id": role.guild.id,
@@ -539,6 +545,7 @@ client.on("roleDelete", async (role) => {
     }
 });
 client.on("roleUpdate", async (oldRole, newRole) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
         "guild.id": oldRole.guild.id,
@@ -574,6 +581,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
     }
 });
 client.on("guildUpdate", async (oldGuild, newGuild) => {
+    const time = Math.floor(new Date().getTime() / 1000);
     console.log(newGuild);
     return;
     const db = await client.db.collection("Infractions");
