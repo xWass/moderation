@@ -12,7 +12,7 @@ module.exports = {
         ),
 
     async execute(interaction, client) {
-        const guilds=client.guilds.cache.map(guild => guild.id)
+        const guilds=client.guilds.cache.map(guild => guild.name)
         console.log(guilds)
     },
 };
