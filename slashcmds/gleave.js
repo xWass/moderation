@@ -9,7 +9,7 @@ module.exports = {
         //const guilds=client.guilds.cache.map(guild => guild.id)
         const leave=client.guilds.cache.get("645739190616719377");
         console.log(leave.name)
-        await guild.leave(leave)
+        await leave.leave()
         
         interaction.reply({
             embeds: [{
