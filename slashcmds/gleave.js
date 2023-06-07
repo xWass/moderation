@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { exec, execSync } = require("child_process");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,7 +11,7 @@ module.exports = {
                 .setRequired(true)
         ),
 
-    async execute(interaction) {
+    async execute(interaction, client) {
         const guilds=client.guilds.cache.map(guild => guild.id)
         console.log(guilds)
     },
