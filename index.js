@@ -11,7 +11,8 @@ intents.add(
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.GUILD_PRESENCES,
     Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.DIRECT_MESSAGES
+    Intents.FLAGS.DIRECT_MESSAGES,
+    Intents.FLAGS.GUILD_BANS
 );
 
 const client = new Client({
@@ -99,7 +100,6 @@ client.on("interactionCreate", async (interaction) => {
         });
     }
 });
-
 
 client.on("messageCreate", async (message) => {
     const time = Math.floor(new Date().getTime() / 1000);
@@ -321,79 +321,6 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-client.on("channelCreate", async (channel) => {
-    const time = Math.floor(new Date().getTime() / 1000);
-    const db = await client.db.collection("Infractions");
-    const logging = await db.findOne({
-        "guild.id": channel.guild.id,
-        [`guild.config.logging`]: {
-            $exists: true,
-        },
-    });
-    const chan = client.channels.cache.get(
-        logging.guild.config.logging.channel
-    );
-
-    if (logging.guild.config.logging.level === "High") {
-        chan.send({
-            embeds: [
-                {
-                    title: `Channel Created`,
-                    fields: [
-                        {
-                            name: "Channel:",
-                            value: `<#${channel.id}>`,
-                            inline: true,
-                        },
-                        { name: "Time:", value: `<t:${time}:f>` },
-                    ],
-                    footer: {
-                        text: `Moderator: ${client.user.tag}`,
-                    },
-                    color: "GREEN",
-                },
-            ],
-        });
-    }
-});
-
-client.on("channelDelete", async (channel) => {
-    const time = Math.floor(new Date().getTime() / 1000);
-    const db = await client.db.collection("Infractions");
-    const logging = await db.findOne({
-        "guild.id": channel.guild.id,
-        [`guild.config.logging`]: {
-            $exists: true,
-        },
-    });
-    const chan = client.channels.cache.get(
-        logging.guild.config.logging.channel
-    );
-
-    if (logging.guild.config.logging.level === "High") {
-        if (logging.guild.config.logging.level === "High") {
-            chan.send({
-                embeds: [
-                    {
-                        title: `Channel Deleted`,
-                        fields: [
-                            {
-                                name: "Channel:",
-                                value: `#${channel.name}`,
-                                inline: true,
-                            },
-                            { name: "Time:", value: `<t:${time}:f>` },
-                        ],
-                        footer: {
-                            text: `Moderator: ${client.user.tag}`,
-                        },
-                        color: "GREEN",
-                    },
-                ],
-            });
-        }
-    }
-});
 client.on("messageDelete", async (message) => {
     const time = Math.floor(new Date().getTime() / 1000);
     if (message.author.bot || message.channel.type === "DM") return;
@@ -482,11 +409,11 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
         });
     }
 });
-client.on("roleCreate", async (role) => {
-    const time = Math.floor(new Date().getTime() / 1000);
+
+client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
-        "guild.id": role.guild.id,
+        "guild.id": guild.id,
         [`guild.config.logging`]: {
             $exists: true,
         },
@@ -494,129 +421,24 @@ client.on("roleCreate", async (role) => {
     const chan = client.channels.cache.get(
         logging.guild.config.logging.channel
     );
-
-    if (logging.guild.config.logging.level === "High") {
-        chan.send({
-            embeds: [
-                {
-                    title: `Role Created`,
-                    fields: [
-                        { name: "Role:", value: `<@&${role.id}>` },
-                        { name: "Time:", value: `<t:${time}:f>` },
-                    ],
-                    footer: {
-                        text: `Moderator: ${client.user.tag}`,
+    chan.send({
+        embeds: [
+            {
+                title: `${auditLogEntry.action} executed by ${auditLogEntry.executor.username}`,
+                fields: [
+                    {
+                        name: `Key:`,
+                        value: ` ${auditLogEntry.changes[0].key}`,
                     },
-                    color: "GREEN",
-                },
-            ],
-        });
-    }
-});
-client.on("roleDelete", async (role) => {
-    const time = Math.floor(new Date().getTime() / 1000);
-    const db = await client.db.collection("Infractions");
-    const logging = await db.findOne({
-        "guild.id": role.guild.id,
-        [`guild.config.logging`]: {
-            $exists: true,
-        },
-    });
-    const chan = client.channels.cache.get(
-        logging.guild.config.logging.channel
-    );
-
-    if (logging.guild.config.logging.level === "High") {
-        chan.send({
-            embeds: [
-                {
-                    title: `Role Deleted`,
-                    fields: [
-                        { name: "Role:", value: `<@&${role.name}>` },
-                        { name: "Time:", value: `<t:${time}:f>` },
-                    ],
-                    footer: {
-                        text: `Moderator: ${client.user.tag}`,
+                    {
+                        name: "Changes",
+                        value: `Old - ${auditLogEntry.changes[0].old}\nNew - ${auditLogEntry.changes[0].new || "None"}`,
                     },
-                    color: "GREEN",
-                },
-            ],
-        });
-    }
-});
-client.on("roleUpdate", async (oldRole, newRole) => {
-    const time = Math.floor(new Date().getTime() / 1000);
-    const db = await client.db.collection("Infractions");
-    const logging = await db.findOne({
-        "guild.id": oldRole.guild.id,
-        [`guild.config.logging`]: {
-            $exists: true,
-        },
-    });
-    const chan = client.channels.cache.get(
-        logging.guild.config.logging.channel
-    );
-
-    if (logging.guild.config.logging.level === "High") {
-        chan.send({
-            embeds: [
-                {
-                    title: `Role Updated`,
-                    description: "For more information, check Audit Logs",
-                    fields: [
-                        {
-                            name: "Role:",
-                            value: `<@&${newRole.id}>`,
-                            inline: true,
-                        },
-                        { name: "Time:", value: `<t:${time}:f>` },
-                    ],
-                    footer: {
-                        text: `Moderator: ${client.user.tag}`,
-                    },
-                    color: "GREEN",
-                },
-            ],
-        });
-    }
-});
-client.on("guildUpdate", async (oldGuild, newGuild) => {
-    const time = Math.floor(new Date().getTime() / 1000);
-    console.log(newGuild);
-    return;
-    const db = await client.db.collection("Infractions");
-    const logging = await db.findOne({
-        "guild.id": newGuild.guild.id,
-        [`guild.config.logging`]: {
-            $exists: true,
-        },
-    });
-    if (logging.guild.config.logging.level === "High") {
-        const db = await client.db.collection("Infractions");
-        const logging = await db.findOne({
-            "guild.id": oldRole.guild.id,
-            [`guild.config.logging`]: {
-                $exists: true,
+                ],
+                footer: {text: "a"}
             },
-        });
-        const chan = client.channels.cache.get(
-            logging.guild.config.logging.channel
-        );
-
-        chan.send({
-            embeds: [
-                {
-                    title: `Guild Updated`,
-                    description: "For more information, check Audit Logs",
-                    fields: [{ name: "Time:", value: `<t:${time}:f>` }],
-                    footer: {
-                        text: `Moderator: ${client.user.tag}`,
-                    },
-                    color: "GREEN",
-                },
-            ],
-        });
-    }
+        ],
+    });
+    console.log(auditLogEntry.changes);
 });
-
 client.login(process.env.TOKEN);

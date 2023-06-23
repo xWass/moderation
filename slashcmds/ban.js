@@ -142,7 +142,7 @@ module.exports = {
                                 { name: "Time:", value: `<t:${time}:f>` },
                             ],
                             footer: {
-                                text: `Moderator: ${interaction.user.tag}`,
+                                text: `Moderator: ${moderator}`,
                             },
                             color: "GREEN",
                         },
@@ -154,7 +154,7 @@ module.exports = {
                     {
                         description: `<@${mem.id}> has been banned! \nReason: ${reason}`,
                         footer: {
-                            text: `Moderator: ${interaction.user.tag}`,
+                            text: `Moderator: ${moderator}`,
                         },
                         color: "GREEN",
                     },
