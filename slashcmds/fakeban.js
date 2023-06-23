@@ -3,7 +3,7 @@ const chalk = require("chalk");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("ban")
+        .setName("fakeban")
         .setDescription(
             "Ban a member. This also deletes the member's messages from the past hour"
         )
