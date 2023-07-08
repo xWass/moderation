@@ -139,8 +139,8 @@ client.on("messageCreate", async (message) => {
         });
     }
 
-    const reg =
-        /\b(?:discord\.gg\/[a-zA-Z]+|(?:(?:www|canary|ptb)\.)?discord(?:app)?\.com\/invite\/[a-zA-Z]+)\b/gi;
+    const reg = /(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(?<invite>.+)/
+    
     if (automod.guild.config.automod.status === true) {
         if (message.content.match(reg)) {
             const type = "AutoMod";
@@ -217,102 +217,6 @@ client.on("messageCreate", async (message) => {
                 embeds: [
                     {
                         title: "No invites allowed!",
-                    },
-                ],
-                ephemeral: true,
-            });
-        }
-        const badWords = ["faggot", "nigger"]; // yea this is part of the bot, get over it. more words in the future
-        const text = message.content.toLowerCase().split(/ +/g);
-        function findMatchingValues(arr1, arr2) {
-            let matchingValues = [];
-            for (let i = 0; i < arr1.length; i++) {
-                for (let j = 0; j < arr2.length; j++) {
-                    if (arr1[i] === arr2[j]) {
-                        matchingValues.push(arr1[i]);
-                    }
-                }
-            }
-            return matchingValues;
-        }
-
-        const found = findMatchingValues(badWords, text);
-        if (found[0] !== undefined) {
-            const type = "AutoMod";
-            const reason = "Inappropriate language.";
-
-            const moderator = client.user.tag;
-            message.delete();
-            if (automod.guild.config.automod.warn === true) {
-                await db.updateOne(
-                    {
-                        "guild.id": message.guild.id,
-                    },
-                    {
-                        $push: {
-                            [`guild.infractions.${[message.author.id]}`]: {
-                                type,
-                                reason,
-                                time,
-                                moderator,
-                            },
-                        },
-                    }
-                );
-                if (logging.guild.config.logging.status === true) {
-                    chan.send({
-                        embeds: [
-                            {
-                                title: `AutoMod`,
-                                fields: [
-                                    {
-                                        name: "Member:",
-                                        value: `<@${message.author.id}>`,
-                                        inline: true,
-                                    },
-                                    {
-                                        name: "Reason:",
-                                        value: reason,
-                                        inline: true,
-                                    },
-                                    {
-                                        name: "Content:",
-                                        value: `${message.content}`,
-                                    },
-                                    { name: "Time:", value: `<t:${time}:f>` },
-                                ],
-                                footer: {
-                                    text: `Moderator: ${client.user.tag}`,
-                                },
-                                color: "GREEN",
-                            },
-                        ],
-                    });
-                }
-
-                try {
-                    await message.author.send({
-                        embeds: [
-                            {
-                                description: `You have been warned in ${message.guild.name}.`,
-                                fields: [
-                                    {
-                                        name: "Reason:",
-                                        value: reason,
-                                    },
-                                ],
-                            },
-                        ],
-                    });
-                    return;
-                } catch {
-                    return;
-                }
-            }
-            await message.author.send({
-                embeds: [
-                    {
-                        title: "Watch your language!",
                     },
                 ],
                 ephemeral: true,
@@ -421,24 +325,43 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
     const chan = client.channels.cache.get(
         logging.guild.config.logging.channel
     );
+
+    const changes = auditLogEntry.changes
+        .map((changes) => {
+            return `**❯** ${changes.key.replaceAll('_', ' ')}  \n \u3000 New: ${
+               
+                Array.isArray(changes.new) 
+                    ? changes.new.map(
+                            (
+                                element, 
+                            ) =>
+                                Object.entries(element) 
+                                    .map(([key, value]) => ` \u3000 \u3000 ${key}: ${value}`) 
+                                    .join(', '),
+                      )
+                    : changes.new
+            }\n \u3000 Old: ${
+                Array.isArray(changes.old)
+                    ? changes.old.map((element) =>
+                            Object.entries(element)
+                                .map(([key, value]) => ` \u3000 \u3000 ${key}: ${value}`)
+                                .join(', '),
+                      )
+                    : changes.old
+            }`;
+        })
+        .join('\n');
     chan.send({
         embeds: [
             {
-                title: `${auditLogEntry.action} executed by ${auditLogEntry.executor.username}`,
-                fields: [
-                    {
-                        name: `Key:`,
-                        value: ` ${auditLogEntry.changes[0].key}`,
-                    },
-                    {
-                        name: "Changes",
-                        value: `Old - ${auditLogEntry.changes[0].old}\nNew - ${auditLogEntry.changes[0].new || "None"}`,
-                    },
-                ],
-                footer: {text: "a"}
+                title: `${auditLogEntry.action}`,
+                fields: [{ name: "Changes", value: `${changes}` }],
+                footer: {
+                    text: `Executed by ${auditLogEntry.executor.username}`,
+                },
             },
         ],
     });
-    console.log(auditLogEntry.changes);
 });
+
 client.login(process.env.TOKEN);
