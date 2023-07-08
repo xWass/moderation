@@ -328,10 +328,10 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
 
     const changes = auditLogEntry.changes
         .map((changes) => {
-            return `**❯** ${changes.key.replaceAll('_', ' ')}  \n \u3000 New: ${
+            return `**❯** ${changes.key.replaceAll('_', ' ')}  \n \u3000 Old: ${
                
-                Array.isArray(changes.new) 
-                    ? changes.new.map(
+                Array.isArray(changes.old) 
+                    ? changes.old.map(
                             (
                                 element, 
                             ) =>
@@ -339,15 +339,15 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                                     .map(([key, value]) => ` \u3000 \u3000 ${key}: ${value}`) 
                                     .join(', '),
                       )
-                    : changes.new
-            }\n \u3000 Old: ${
-                Array.isArray(changes.old)
-                    ? changes.old.map((element) =>
+                    : changes.old
+            }\n \u3000 New: ${
+                Array.isArray(changes.new)
+                    ? changes.new.map((element) =>
                             Object.entries(element)
                                 .map(([key, value]) => ` \u3000 \u3000 ${key}: ${value}`)
                                 .join(', '),
                       )
-                    : changes.old
+                    : changes.new
             }`;
         })
         .join('\n');
