@@ -15,10 +15,12 @@ Complete:
 - Creation of events for logging (messageDelete, guildMemberUpdate, etc.)
 - Second level of AutoMod (for message deletions, nickname changes. Just a stricter level of Automod)
 
+- AUTOMOD WORD FILTERS REMOVED, TO BE REPLACED WITH BUILT IN AUTOMOD.
+- Updated logging. Pulls from audit log event instead of individual events.
+
 In progress:
-- Filling in naughty words for automod. might .gitignore this one later
-- Got some optimizations to do with this, and might move events to a sub folder for a cleaner setup.
 - Config command rebuilding for ease of use
+- Moving to v14
 
 
 **New config command requires a LOT more work and is not even close to complete. its gonna be long. and annoying. enjoy.
