@@ -139,8 +139,9 @@ client.on("messageCreate", async (message) => {
         });
     }
 
-    const reg = /(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(?<invite>.+)/
-    
+    const reg =
+        /(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(?<invite>.+)/;
+
     if (automod.guild.config.automod.status === true) {
         if (message.content.match(reg)) {
             const type = "AutoMod";
@@ -328,29 +329,35 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
 
     const changes = auditLogEntry.changes
         .map((changes) => {
-            return `**❯** ${changes.key.replaceAll('_', ' ')}  \n \u3000 Old: ${
-               
-                Array.isArray(changes.old) 
-                    ? changes.old.map(
-                            (
-                                element, 
-                            ) =>
-                                Object.entries(element) 
-                                    .map(([key, value]) => ` \n\u3000\u3000 ${key}: ${value || `\n\u3000 undefined`}`) 
-                                    .join(', '),
+            return `**❯** ${changes.key.replaceAll("_", " ")}  \n \u3000 Old: ${
+                Array.isArray(changes.old)
+                    ? changes.old.map((element) =>
+                          Object.entries(element)
+                              .map(
+                                  ([key, value]) =>
+                                      ` \n\u3000\u3000 ${key}: ${
+                                          value || `\n\u3000 undefined`
+                                      }`
+                              )
+                              .join(", ")
                       )
                     : changes.old
             }\n \u3000 New: ${
                 Array.isArray(changes.new)
                     ? changes.new.map((element) =>
-                            Object.entries(element)
-                                .map(([key, value]) => ` \n\u3000\u3000 ${key}: ${value}`)
-                                .join(', '),
+                          Object.entries(element)
+                              .map(
+                                  ([key, value]) =>
+                                      ` \n\u3000\u3000 ${key}: ${
+                                          value || `\n\u3000 undefined`
+                                      }`
+                              )
+                              .join(", ")
                       )
                     : changes.new
             }`;
         })
-        .join('\n');
+        .join("\n");
     chan.send({
         embeds: [
             {
