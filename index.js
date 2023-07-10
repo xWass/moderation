@@ -336,7 +336,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                                 element, 
                             ) =>
                                 Object.entries(element) 
-                                    .map(([key, value]) => ` \n\u3000 ${key}: ${value}`) 
+                                    .map(([key, value]) => ` \n\u3000\u3000 ${key}: ${value}`) 
                                     .join(', '),
                       )
                     : changes.old
@@ -344,7 +344,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                 Array.isArray(changes.new)
                     ? changes.new.map((element) =>
                             Object.entries(element)
-                                .map(([key, value]) => ` \n\u3000 ${key}: ${value}`)
+                                .map(([key, value]) => ` \n\u3000\u3000 ${key}: ${value}`)
                                 .join(', '),
                       )
                     : changes.new
