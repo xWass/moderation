@@ -139,9 +139,8 @@ client.on("messageCreate", async (message) => {
         });
     }
 
-    const reg =
-        /(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(?<invite>.+)/;
-
+    const reg = /(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(?<invite>.+)/
+    
     if (automod.guild.config.automod.status === true) {
         if (message.content.match(reg)) {
             const type = "AutoMod";
@@ -335,29 +334,29 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                           Object.entries(element)
                               .map(
                                   ([key, value]) =>
-                                      ` \n\u3000\u3000 ${key}: ${
-                                          value || `\n\u3000 undefined`
-                                      }`
+                                      ` \n\u3000\u3000 ${key}: ${valuez}`
                               )
                               .join(", ")
                       )
                     : changes.old
+                    ? `${changes.old}`
+                    : `\n\u3000\u3000${changes.old}`
             }\n \u3000 New: ${
                 Array.isArray(changes.new)
                     ? changes.new.map((element) =>
                           Object.entries(element)
                               .map(
                                   ([key, value]) =>
-                                      ` \n\u3000\u3000 ${key}: ${
-                                          value || `\n\u3000 undefined`
-                                      }`
+                                      ` \n\u3000\u3000 ${key}: ${value}`
                               )
                               .join(", ")
                       )
                     : changes.new
+                    ? `${changes.new}`
+                    : `\n\u3000\u3000${changes.new}`
             }`;
         })
-        .join("\n");
+        .join('\n');
     chan.send({
         embeds: [
             {
