@@ -334,7 +334,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                           Object.entries(element)
                               .map(
                                   ([key, value]) =>
-                                      ` \n\u3000\u3000 ${key}: ${valuez}`
+                                      ` \n\u3000\u3000 ${key}: ${value}`
                               )
                               .join(", ")
                       )
