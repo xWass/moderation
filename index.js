@@ -332,8 +332,6 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                               )
                               .join(", ")
                       )
-                    : changes.old
-                    ? `${changes.old}`
                     : `\n\u3000\u3000${changes.old}`
             }\n \u3000 New: ${
                 Array.isArray(changes.new)
@@ -345,8 +343,6 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                               )
                               .join(", ")
                       )
-                    : changes.new
-                    ? `${changes.new}`
                     : `\n\u3000\u3000${changes.new}`
             }`;
         })
