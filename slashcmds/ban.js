@@ -144,7 +144,7 @@ module.exports = {
                             footer: {
                                 text: `Moderator: ${moderator}`,
                             },
-                            color: "GREEN",
+                            color: "RED",
                         },
                     ],
                 });

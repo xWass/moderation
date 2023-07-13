@@ -82,7 +82,7 @@ module.exports = {
                             footer: {
                                 text: `Moderator: ${interaction.user.tag}`,
                             },
-                            color: "GREEN",
+                            color: "YELLOW",
                         },
                     ],
                 });
@@ -106,7 +106,7 @@ module.exports = {
             interaction.reply({
                 embeds: [
                     {
-                        description: `Something went very wrong. Send this error to xWass#0001! \n\`\`\`${err}\`\`\``,
+                        description: `Something went very wrong. Send this error to \`xwass.\`! \n\`\`\`${err}\`\`\``,
                     },
                 ],
                 ephemeral: true,

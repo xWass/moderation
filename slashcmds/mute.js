@@ -158,7 +158,7 @@ module.exports = {
                             footer: {
                                 text: `Moderator: ${interaction.user.tag}`,
                             },
-                            color: "GREEN",
+                            color: "RED",
                         },
                     ],
                 });
@@ -171,7 +171,7 @@ module.exports = {
                         footer: {
                             text: `Moderator: ${interaction.user.tag}`,
                         },
-                        color: "GREEN",
+                        color: "RED",
                     },
                 ],
             });

@@ -93,7 +93,7 @@ client.on("interactionCreate", async (interaction) => {
         interaction.reply({
             embeds: [
                 {
-                    description: `An error has occurred! Message <@928624781731983380> (xWass#0001) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${error}\`\`\``,
+                    description: `An error has occurred! Message <@928624781731983380> (xwass.) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${error}\`\`\``,
                 },
             ],
             ephemeral: true,
@@ -188,7 +188,7 @@ client.on("messageCreate", async (message) => {
                                 footer: {
                                     text: `Moderator: ${client.user.tag}`,
                                 },
-                                color: "GREEN",
+                                color: "RED",
                             },
                         ],
                     });
@@ -256,10 +256,7 @@ client.on("messageDelete", async (message) => {
                         },
                         { name: "Time:", value: `<t:${time}:f>` },
                     ],
-                    footer: {
-                        text: `Moderator: ${client.user.tag}`,
-                    },
-                    color: "GREEN",
+                    color: "RED",
                 },
             ],
         });
@@ -304,10 +301,7 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
                         },
                         { name: "Time:", value: `<t:${time}:f>` },
                     ],
-                    footer: {
-                        text: `Moderator: ${client.user.tag}`,
-                    },
-                    color: "GREEN",
+                    color: "YELLOW",
                 },
             ],
         });
@@ -339,7 +333,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                               .join(", ")
                       )
                     : changes.old
-                    ? `${changes.old}`
+                    ? `\n\u3000\u3000${changes.old}`
                     : `\n\u3000\u3000${changes.old}`
             }\n \u3000 New: ${
                 Array.isArray(changes.new)
@@ -352,7 +346,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                               .join(", ")
                       )
                     : changes.new
-                    ? `${changes.new}`
+                    ? `\n\u3000\u3000${changes.new}`
                     : `\n\u3000\u3000${changes.new}`
             }`;
         })
@@ -367,6 +361,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                 },
             },
         ],
+        color: "ORANGE"
     });
 });
 
