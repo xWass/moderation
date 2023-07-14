@@ -139,8 +139,9 @@ client.on("messageCreate", async (message) => {
         });
     }
 
-    const reg = /(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(?<invite>.+)/
-    
+    const reg =
+        /(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(?<invite>.+)/;
+
     if (automod.guild.config.automod.status === true) {
         if (message.content.match(reg)) {
             const type = "AutoMod";
@@ -264,7 +265,7 @@ client.on("messageDelete", async (message) => {
 });
 client.on("messageUpdate", async (oldMessage, newMessage) => {
     const time = Math.floor(new Date().getTime() / 1000);
-    if (oldMessage.author.bot || oldMessage.channel.type === "DM") return;
+    if (oldMessage?.author?.bot || oldMessage?.channel?.type === "DM") return;
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
         "guild.id": oldMessage.guild.id,
@@ -319,7 +320,6 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
     const chan = client.channels.cache.get(
         logging.guild.config.logging.channel
     );
-
     const changes = auditLogEntry.changes
         .map((changes) => {
             return `**❯** ${changes.key.replaceAll("_", " ")}  \n \u3000 Old: ${
@@ -346,12 +346,39 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                     : `\n\u3000\u3000${changes.new}`
             }`;
         })
-        .join('\n');
+        .join("\n");
+    const targetType=auditLogEntry.targetType
+    let x = ""
+    switch (targetType) {
+        case ("USER"):
+            x = "@";
+            break;
+        case ("CHANNEL"):
+            x = "#";
+            break;
+        case ("ROLE"):
+            x = "@&";
+            break;
+        default:
+            x = undefined;
+    }
+
     chan.send({
         embeds: [
             {
                 title: `${auditLogEntry.action}`,
-                fields: [{ name: "Changes", value: `${changes}` }],
+                fields: [
+                    {
+                        name: `${auditLogEntry.targetType}:`,
+                        value: x
+                            ? `<${x}${auditLogEntry.targetId}>`
+                            :`${ auditLogEntry.targetId }`,
+                    },
+                    {
+                        name: "Changes:",
+                        value: `${ changes }`,
+                    },
+                ],
                 footer: {
                     text: `Executed by ${auditLogEntry.executor.username}`,
                 },
