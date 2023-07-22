@@ -118,7 +118,7 @@ client.on("messageCreate", async (message) => {
         },
     });
     const verify = await db.findOne({
-        "guild.id": interaction.guild.id,
+        "guild.id": message.guild.id,
         [`guild.config.verify.role`]: {
             $exists: true,
         },
