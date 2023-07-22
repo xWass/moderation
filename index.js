@@ -241,7 +241,7 @@ client.on("messageCreate", async (message) => {
 
 client.on("messageDelete", async (message) => {
     const time = Math.floor(new Date().getTime() / 1000);
-    if (message.author.bot || message.channel.type === "DM") return;
+    if (message?.author?.bot || message?.channel?.type === "DM") return;
     const db = await client.db.collection("Infractions");
     const logging = await db.findOne({
         "guild.id": message.guild.id,
