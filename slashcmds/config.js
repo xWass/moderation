@@ -117,7 +117,6 @@ module.exports = {
         if (warn === "Disable") enableWarn = false;
 
         const found = await db.findOne({ "guild.id": interaction.guild.id });
-
         if (
             !interaction.member.permissions.has("MANAGE_SERVER") ||
             !interaction.guild.me.permissions.has("MANAGE_SERVER")

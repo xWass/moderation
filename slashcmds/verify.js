@@ -5,7 +5,6 @@ const chalk = require("chalk");
 
 const letters = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789";
 
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("verify")
@@ -13,18 +12,18 @@ module.exports = {
 
     async execute(interaction, client) {
         console.log(
-            `${chalk.greenBright(
+            `${ chalk.greenBright(
                 "[EVENT ACKNOWLEDGED]"
-            )} interactionCreate with command verify`
+            ) } interactionCreate with command verify`
         );
-        const db = await client.db.collection("Infractions");
-        const find = await db.findOne({
+        const db=await client.db.collection("Infractions");
+        const find=await db.findOne({
             "guild.id": interaction.guild.id,
             [`guild.config.verify.status`]: {
                 $exists: true,
             },
         });
-        const status=find.guild.config.verify.status
+        const status=find.guild.config.verify.status;
         if (status===false) {
             interaction.reply({
                 embeds: [
@@ -37,42 +36,54 @@ module.exports = {
             return;
         }
         function generateCaptchaString() {
-            let str = "";
+            let str="";
 
-            for (let i = 0; i < 6; i++)
-                str += `${
-                    letters[Math.floor(Math.random() * letters.length)]
-                } `;
+            for (let i=0; i<6; i++)
+                str+=`${ letters[Math.floor(Math.random()*letters.length)]
+                    } `;
 
             return str;
         }
 
         function createCaptcha() {
-            const ctx = createCanvas(500, 200).getContext("2d");
+            const ctx=createCanvas(500, 200).getContext("2d");
 
-            ctx.fillStyle = "#303434";
+            ctx.fillStyle="#303434";
             ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-            const captchaString = generateCaptchaString();
+            const captchaString=generateCaptchaString();
 
-            ctx.font = "50px Sans";
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
+            ctx.font="50px Sans";
+            ctx.fillStyle="white";
+            ctx.textAlign="center";
             ctx.fillText(captchaString, 250, 120);
 
-            return { captchaString, buffer: ctx.canvas.toBuffer() };
+            return {captchaString, buffer: ctx.canvas.toBuffer()};
         }
 
-        const { captchaString, buffer } = createCaptcha();
-        const attachment = new MessageAttachment(buffer, "captcha.png");
+        const {captchaString, buffer}=createCaptcha();
+        const attachment=new MessageAttachment(buffer, "captcha.png");
+        const memm=await db.findOne({
+            "guild.id": interaction.guild.id,
+            [`guild.config.verify.role`]: {
+                $exists: true,
+            },
+        });
 
-        const sentMessage = await interaction.user
+        if (interaction.channel.id !== memm.guild.config.verify.channel) {
+            await interaction.reply({
+                content: "This command does not work in this channel.",
+                ephemeral: true
+            });
+            return;
+        }
+        const sentMessage=await interaction.user
             .send({
                 embeds: [
                     {
                         title: "Please type the captcha shown below.",
                         image: {
-                            url: `attachment://${attachment.name}`,
+                            url: `attachment://${ attachment.name }`,
                         },
                         color: "GREEN",
                     },
@@ -81,7 +92,7 @@ module.exports = {
             })
             .catch(() => null);
 
-        if (sentMessage === null) {
+        if (sentMessage===null) {
             await interaction.reply({
                 content:
                     "Your DMs are closed, please open them so I can send you the captcha.",
@@ -89,6 +100,7 @@ module.exports = {
             });
             return;
         }
+
 
         await interaction.reply({
             embeds: [
@@ -99,12 +111,12 @@ module.exports = {
             ephemeral: true,
         });
 
-        const response = await sentMessage.channel
-            .awaitMessages({ max: 1, time: 60_000, errors: ["time"] })
+        const response=await sentMessage.channel
+            .awaitMessages({max: 1, time: 60_000, errors: ["time"]})
             .then((collected) => collected.first())
             .catch(() => null);
 
-        if (response === null) {
+        if (response===null) {
             await sentMessage.channel.send({
                 embeds: [
                     {
@@ -115,7 +127,7 @@ module.exports = {
             });
             return;
         }
-        if (response.content !== captchaString.replaceAll(" ", "")) {
+        if (response.content!==captchaString.replaceAll(" ", "")) {
             await sentMessage.channel.send({
                 embeds: [
                     {
@@ -134,15 +146,18 @@ module.exports = {
                 },
             ],
         });
-        const memm = await db.findOne({
-            "guild.id": interaction.guild.id,
-            [`guild.config.verify.role`]: {
-                $exists: true,
-            },
-        });
 
-        const fetch = memm.guild.config.verify.role;
-        const role = interaction.guild.roles.cache.find((r) => r.id === fetch);
-        interaction.member.roles.add(role);
+
+        const fetch=memm.guild.config.verify.role;
+        const role=interaction.guild.roles.cache.find((r) => r.id===fetch);
+        try {
+            interaction.member.roles.add(role);
+        } catch {
+            interaction.followUp({
+                embeds: [{
+                    title: "Role heirarchy is incorrect"
+                }]
+            })
+        }
     },
 };

@@ -102,6 +102,7 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 client.on("messageCreate", async (message) => {
+    if (message.author.bot || message.channel.type === "DM") return;
     const time = Math.floor(new Date().getTime() / 1000);
     const db = await client.db.collection("Infractions");
     const automod = await db.findOne({
@@ -347,45 +348,49 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
             }`;
         })
         .join("\n");
-    const targetType=auditLogEntry.targetType
-    let x = ""
+    const targetType = auditLogEntry.targetType;
+    let x = "";
     switch (targetType) {
-        case ("USER"):
+        case "USER":
             x = "@";
             break;
-        case ("CHANNEL"):
+        case "CHANNEL":
             x = "#";
             break;
-        case ("ROLE"):
+        case "ROLE":
             x = "@&";
             break;
         default:
             x = undefined;
     }
 
-    chan.send({
-        embeds: [
-            {
-                title: `${auditLogEntry.action}`,
-                fields: [
-                    {
-                        name: `${auditLogEntry.targetType}:`,
-                        value: x
-                            ? `<${x}${auditLogEntry.targetId}>`
-                            :`${ auditLogEntry.targetId }`,
+    try {
+        chan.send({
+            embeds: [
+                {
+                    title: `${auditLogEntry.action}`,
+                    fields: [
+                        {
+                            name: `${auditLogEntry.targetType}:`,
+                            value: x
+                                ? `<${x}${auditLogEntry.targetId}>`
+                                : `${auditLogEntry.targetId}`,
+                        },
+                        {
+                            name: "Changes:",
+                            value: `${changes}`,
+                        },
+                    ],
+                    footer: {
+                        text: `Executed by ${auditLogEntry.executor.username}`,
                     },
-                    {
-                        name: "Changes:",
-                        value: `${ changes }`,
-                    },
-                ],
-                footer: {
-                    text: `Executed by ${auditLogEntry.executor.username}`,
+                    color: "ORANGE",
                 },
-                color: "ORANGE",
-            },
-        ],
-    });
+            ],
+        });
+    } catch {
+        return;
+    }
 });
 
 client.login(process.env.TOKEN);
