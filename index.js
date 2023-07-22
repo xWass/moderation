@@ -117,11 +117,23 @@ client.on("messageCreate", async (message) => {
             $exists: true,
         },
     });
+    const verify = await db.findOne({
+        "guild.id": interaction.guild.id,
+        [`guild.config.verify.role`]: {
+            $exists: true,
+        },
+    });
     const chan = client.channels.cache.get(
         logging.guild.config.logging.channel
     );
 
-    if (message.author.bot || message.channel.type === "DM") return;
+    if (message.author.bot||message.channel.type==="DM") return;
+        
+    if (message.channel.id===verify.guild.config.verify.channel) {
+        if (message.member.permissions.has("ADMINISTRATOR")) return;
+        message.delete()
+        return;
+    }
     const found = (await db.findOne({ "guild.id": message.guild.id })) || null;
     if (!found) {
         await db.insertOne({
@@ -374,7 +386,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                             name: `${auditLogEntry.targetType}:`,
                             value: x
                                 ? `<${x}${auditLogEntry.targetId}>`
-                                : `${auditLogEntry.targetId || "None"}`,
+                                : `${auditLogEntry.targetId ?? "None"}`,
                         },
                         {
                             name: "Changes:",
