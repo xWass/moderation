@@ -374,7 +374,7 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                             name: `${auditLogEntry.targetType}:`,
                             value: x
                                 ? `<${x}${auditLogEntry.targetId}>`
-                                : `${auditLogEntry.targetId}`,
+                                : `${auditLogEntry.targetId || "None"}`,
                         },
                         {
                             name: "Changes:",
