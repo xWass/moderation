@@ -6,33 +6,6 @@ module.exports = {
         .setDescription("Change bot configurations.")
         .addSubcommand((sub) =>
             sub
-                .setName("automod")
-                .setDescription("Enables or disables automod.")
-                .addStringOption((stringOption) =>
-                    stringOption
-                        .setName("modify")
-                        .setDescription("Enable or Disable?")
-                        .addChoices(
-                            { name: "Enable", value: "Enable" },
-                            { name: "Disable", value: "Disable" }
-                        )
-                        .setRequired(true)
-                )
-                .addStringOption((stringOption) =>
-                    stringOption
-                        .setName("warn")
-                        .setDescription(
-                            "Warn the user when automod is triggered?"
-                        )
-                        .addChoices(
-                            { name: "Enable", value: "Enable" },
-                            { name: "Disable", value: "Disable" }
-                        )
-                        .setRequired(true)
-                )
-        )
-        .addSubcommand((sub) =>
-            sub
                 .setName("verify")
                 .setDescription("Modifies server verification.")
                 .addStringOption((option) =>
@@ -135,68 +108,7 @@ module.exports = {
         }
 
         const chosen = await interaction.options.getSubcommand();
-
-        if (chosen === "automod") {
-            if (!found) {
-                await db.insertOne({
-                    guild: {
-                        id: interaction.guild.id,
-                        infractions: {},
-                        config: {
-                            automod: {
-                                status: value,
-                                warn: enableWarn,
-                            },
-                            verify: {
-                                status: false,
-                                channel: null,
-                                role: null,
-                            },
-                            logging: {
-                                status: false,
-                                channel: null,
-                                level: null,
-                            },
-                        },
-                    },
-                });
-                interaction.reply({
-                    embeds: [
-                        {
-                            description: `Automod has been set to \`${modify}d\``,
-                            footer: {
-                                text: `Moderator: ${moderator}`,
-                            },
-                            color: "GREEN",
-                        },
-                    ],
-                });
-                return;
-            } else {
-                await db.updateOne(
-                    {
-                        "guild.id": interaction.guild.id,
-                    },
-                    {
-                        $set: {
-                            "guild.config.automod.status": value,
-                            "guild.config.automod.warn": enableWarn,
-                        },
-                    }
-                );
-                interaction.reply({
-                    embeds: [
-                        {
-                            description: `Automod has been set to \`${modify}d\``,
-                            footer: {
-                                text: `Moderator: ${moderator}`,
-                            },
-                            color: "GREEN",
-                        },
-                    ],
-                });
-            }
-        } else if (chosen === "verify") {
+        if (chosen === "verify") {
             if (!found) {
                 await db.insertOne({
                     guild: {
@@ -220,17 +132,68 @@ module.exports = {
                         },
                     },
                 });
-                interaction.reply({
-                    embeds: [
-                        {
-                            description: `Verify has been set to \`${modify}d\` \nVerify Channel: <#${chan.id}> \nVerify Role: <@&${role.id}>`,
-                            footer: {
-                                text: `Moderator: ${moderator}`,
+                    try {
+                        await chan.permissionOverwrites.set([
+                            {
+                                id: role.id,
+                                allow: "VIEW_CHANNEL",
                             },
-                            color: "GREEN",
-                        },
-                    ],
-                });
+                            {
+                                id: interaction.guild.id,
+                                deny: "VIEW_CHANNEL",
+                            },
+                        ]);
+                    } catch (err) {
+                        interaction.reply({
+                            embeds: [
+                                {
+                                    title: `I can't change permissions in #${chan.name}`,
+                                    description: `\`\`\`${err}\`\`\``,
+                                    footer: {
+                                        text: "I require the Manage Permissions role, and for my highest role to be above the verification role",
+                                    },
+                                },
+                            ],
+                        });
+                        return;
+                    }
+
+                    try {
+                        chan.send({
+                            embeds: [
+                                {
+                                    description:
+                                        "To verify, click this and press enter: </verify:1042262928969170944>",
+                                },
+                            ],
+                        });
+                    } catch (err) {
+                        interaction.reply({
+                            embeds: [
+                                {
+                                    title: `I do not have access to #${chan.name}`,
+                                    description: `\`\`\`${err}\`\`\``,
+                                    footer: {
+                                        text: "Role permissions were successfully changed.",
+                                    },
+                                },
+                            ],
+                        });
+                        return;
+                    }
+
+                    interaction.reply({
+                        embeds: [
+                            {
+                                description: `Verify has been set to \`${modify}d\` \nVerify Channel: <#${chan.id}> \nVerify Role: <@&${role.id}>`,
+                                footer: {
+                                    text: `Moderator: ${moderator}`,
+                                },
+                                color: "GREEN",
+                            },
+                        ],
+                    });
+
                 return;
             } else {
                 if (value === true) {
