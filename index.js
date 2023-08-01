@@ -204,22 +204,26 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
                           Object.entries(element)
                               .map(
                                   ([key, value]) =>
-                                      ` \n\u3000\u3000 ${key}: ${value}`
+                                      ` \n\u3000\u3000 
+                                      ${key || "Unavailable"}: 
+                                      ${value || "Unavailable"}`
                               )
                               .join(", ")
                       )
-                    : `\n\u3000\u3000${changes.old}`
+                    : `\n\u3000\u3000${changes.old || "Unavailable"}`
             }\n \u3000 New: ${
                 Array.isArray(changes.new)
                     ? changes.new.map((element) =>
                           Object.entries(element)
                               .map(
                                   ([key, value]) =>
-                                      ` \n\u3000\u3000 ${key}: ${value}`
+                                      ` \n\u3000\u3000 
+                                      ${key || "Unavailable"}: 
+                                      ${value || "Unavailable"}`
                               )
                               .join(", ")
                       )
-                    : `\n\u3000\u3000${changes.new}`
+                    : `\n\u3000\u3000${changes.new || "Unavailable"}`
             }`;
         })
         .join("\n");
