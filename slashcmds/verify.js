@@ -81,7 +81,7 @@ module.exports = {
             .send({
                 embeds: [
                     {
-                        title: "Please type the captcha shown below.",
+                        title: "Please type the captcha shown below. This is case sensitive.",
                         image: {
                             url: `attachment://${ attachment.name }`,
                         },
