@@ -1,3 +1,5 @@
+/** @format */
+
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const chalk = require("chalk");
 module.exports = {
@@ -132,67 +134,67 @@ module.exports = {
                         },
                     },
                 });
-                    try {
-                        await chan.permissionOverwrites.set([
-                            {
-                                id: role.id,
-                                allow: "VIEW_CHANNEL",
-                            },
-                            {
-                                id: interaction.guild.id,
-                                deny: "VIEW_CHANNEL",
-                            },
-                        ]);
-                    } catch (err) {
-                        interaction.reply({
-                            embeds: [
-                                {
-                                    title: `I can't change permissions in #${chan.name}`,
-                                    description: `\`\`\`${err}\`\`\``,
-                                    footer: {
-                                        text: "I require the Manage Permissions role, and for my highest role to be above the verification role",
-                                    },
-                                },
-                            ],
-                        });
-                        return;
-                    }
-
-                    try {
-                        chan.send({
-                            embeds: [
-                                {
-                                    description:
-                                        "To verify, click this and press enter: </verify:1042262928969170944>",
-                                },
-                            ],
-                        });
-                    } catch (err) {
-                        interaction.reply({
-                            embeds: [
-                                {
-                                    title: `I do not have access to #${chan.name}`,
-                                    description: `\`\`\`${err}\`\`\``,
-                                    footer: {
-                                        text: "Role permissions were successfully changed.",
-                                    },
-                                },
-                            ],
-                        });
-                        return;
-                    }
-
+                try {
+                    await chan.permissionOverwrites.set([
+                        {
+                            id: role.id,
+                            allow: "VIEW_CHANNEL",
+                        },
+                        {
+                            id: interaction.guild.id,
+                            deny: "VIEW_CHANNEL",
+                        },
+                    ]);
+                } catch (err) {
                     interaction.reply({
                         embeds: [
                             {
-                                description: `Verify has been set to \`${modify}d\` \nVerify Channel: <#${chan.id}> \nVerify Role: <@&${role.id}>`,
+                                title: `I can't change permissions in #${chan.name}`,
+                                description: `\`\`\`${err}\`\`\``,
                                 footer: {
-                                    text: `Moderator: ${moderator}`,
+                                    text: "I require the Manage Permissions role, and for my highest role to be above the verification role",
                                 },
-                                color: "GREEN",
                             },
                         ],
                     });
+                    return;
+                }
+
+                try {
+                    chan.send({
+                        embeds: [
+                            {
+                                description:
+                                    "To verify, click this and press enter: </verify:1042262928969170944>",
+                            },
+                        ],
+                    });
+                } catch (err) {
+                    interaction.reply({
+                        embeds: [
+                            {
+                                title: `I do not have access to #${chan.name}`,
+                                description: `\`\`\`${err}\`\`\``,
+                                footer: {
+                                    text: "Role permissions were successfully changed.",
+                                },
+                            },
+                        ],
+                    });
+                    return;
+                }
+
+                interaction.reply({
+                    embeds: [
+                        {
+                            description: `Verify has been set to \`${modify}d\` \nVerify Channel: <#${chan.id}> \nVerify Role: <@&${role.id}>`,
+                            footer: {
+                                text: `Moderator: ${moderator}`,
+                            },
+                            color: "GREEN",
+                        },
+                    ],
+                });
 
                 return;
             } else {

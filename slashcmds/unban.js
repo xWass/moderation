@@ -1,3 +1,5 @@
+/** @format */
+
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const chalk = require("chalk");
 

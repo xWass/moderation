@@ -1,3 +1,5 @@
+/** @format */
+
 const fs = require("fs");
 const chalk = require("chalk");
 const { MongoClient } = require("mongodb");
@@ -197,9 +199,12 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
         logging.guild.config.logging.channel
     );
     if (logging.guild.config.logging.level === "High") {
-        if (auditLogEntry.action === "INVITE_CREATE" || auditLogEntry.action === "INVITE_DELETE") {
+        if (
+            auditLogEntry.action === "INVITE_CREATE" ||
+            auditLogEntry.action === "INVITE_DELETE"
+        ) {
             try {
-                const altered = auditLogEntry.action.replaceAll("_", " ")
+                const altered = auditLogEntry.action.replaceAll("_", " ");
                 chan.send({
                     embeds: [
                         {

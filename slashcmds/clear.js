@@ -1,3 +1,5 @@
+/** @format */
+
 // this is where funi db stuff gets involved i hate it
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const chalk = require("chalk");

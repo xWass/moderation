@@ -1,3 +1,5 @@
+/** @format */
+
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { exec, execSync } = require("child_process");
 

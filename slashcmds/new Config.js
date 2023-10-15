@@ -1,3 +1,5 @@
+/** @format */
+
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton } = require("discord.js");
 const chalk = require("chalk");
