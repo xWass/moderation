@@ -287,3 +287,4 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
     return;
   }
 })
+client.login(process.env.TOKEN)
