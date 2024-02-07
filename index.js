@@ -18,7 +18,7 @@ intents.add(
 const client = new Client({
   intents,
   partials: ["MESSAGE", "REACTION"],
-  allowedMentions: { parse: ["users"] },
+  allowedMentions: { parse: ["users"] }
 });
 
 client.SlashCommands = new Collection();
@@ -51,7 +51,7 @@ const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
     );
 
     await rest.put(Routes.applicationCommands("928758715505578094"), {
-      body: commands,
+      body: commands
     });
     console.log(
       chalk.greenBright("Successfully reloaded application [/] commands.")
@@ -93,10 +93,10 @@ client.on("interactionCreate", async (interaction) => {
     interaction.reply({
       embeds: [
         {
-          description: `An error has occurred! Message <@928624781731983380> (xwass.) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${error}\`\`\``,
-        },
+          description: `An error has occurred! Message <@928624781731983380> (xwass.) with this information along with what command you ran: \n\`\`\`Command: ${interaction.commandName}\nError: ${error}\`\`\``
+        }
       ],
-      ephemeral: true,
+      ephemeral: true
     });
   }
 });
@@ -109,8 +109,8 @@ client.on("messageCreate", async (message) => {
     (await db.findOne({
       "guild.id": message.guild.id,
       [`guild.config.verify`]: {
-        $exists: true,
-      },
+        $exists: true
+      }
     })) || null;
   const chan = client.channels.cache.get(verify.guild.config.verify.channel);
   if (verify === null) return;
@@ -129,8 +129,8 @@ client.on("messageDelete", async (message) => {
   const logging = await db.findOne({
     "guild.id": message.guild.id,
     [`guild.config.logging`]: {
-      $exists: true,
-    },
+      $exists: true
+    }
   });
   const chan = client.channels.cache.get(logging.guild.config.logging.channel);
 
@@ -142,18 +142,18 @@ client.on("messageDelete", async (message) => {
           fields: [
             {
               name: "Member",
-              value: `${message.author || "Unavailable"}`,
+              value: `${message.author || "Unavailable"}`
             },
             {
               name: "Content:",
               value: `${message.content || "Unavailable"}`,
-              inline: true,
+              inline: true
             },
-            { name: "Time:", value: `<t:${time}:f>` },
+            { name: "Time:", value: `<t:${time}:f>` }
           ],
-          color: "RED",
-        },
-      ],
+          color: "RED"
+        }
+      ]
     });
   }
 });
@@ -165,8 +165,8 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
   const logging = await db.findOne({
     "guild.id": oldMessage.guild.id,
     [`guild.config.logging`]: {
-      $exists: true,
-    },
+      $exists: true
+    }
   });
   const chan = client.channels.cache.get(logging.guild.config.logging.channel);
   if (oldMessage.content === newMessage.content) return;
@@ -178,7 +178,7 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
           fields: [
             {
               name: "Member",
-              value: `${newMessage.author || "Unavailable"}`,
+              value: `${newMessage.author || "Unavailable"}`
             },
             {
               name: "Old Content:",
@@ -186,18 +186,18 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
                 oldMessage.content ||
                 "Unavailable*\n*This might have been a post with just an image."
               }`,
-              inline: true,
+              inline: true
             },
             {
               name: "New Content:",
               value: `${newMessage.content || "Unavailable"} `,
-              inline: true,
+              inline: true
             },
-            { name: "Time:", value: `<t:${time}:f>` },
+            { name: "Time:", value: `<t:${time}:f>` }
           ],
-          color: "YELLOW",
-        },
-      ],
+          color: "YELLOW"
+        }
+      ]
     });
   }
 });
@@ -207,8 +207,8 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
   const logging = await db.findOne({
     "guild.id": guild.id,
     [`guild.config.logging`]: {
-      $exists: true,
-    },
+      $exists: true
+    }
   });
   if (logging.guild.config.logging.level === "Low") return;
   const chan = client.channels.cache.get(logging.guild.config.logging.channel);
@@ -269,22 +269,22 @@ client.on("guildAuditLogEntryCreate", async (auditLogEntry, guild) => {
               name: `${auditLogEntry.targetType}:`,
               value: x
                 ? `<${x}${auditLogEntry.targetId}>`
-                : `${auditLogEntry.targetId ?? "None"}`,
+                : `${auditLogEntry.targetId ?? "None"}`
             },
             {
               name: "Changes:",
-              value: `${changes}`,
-            },
+              value: `${changes}`
+            }
           ],
           footer: {
-            text: `Executed by ${auditLogEntry.executor.username}`,
+            text: `Executed by ${auditLogEntry.executor.username}`
           },
-          color: "ORANGE",
-        },
-      ],
+          color: "ORANGE"
+        }
+      ]
     });
   } catch {
     return;
   }
-})
-client.login(process.env.TOKEN)
+});
+client.login(process.env.TOKEN);

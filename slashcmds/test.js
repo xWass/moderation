@@ -7,22 +7,28 @@ module.exports = {
     if (interaction.user.id !== "928624781731983380") return;
     const links = [];
 
-    const invitePromises = interaction.client.guilds.cache.map(async (guild) => {
-      let channel;
-      try {
-        const channels = await guild.channels.fetch();
-        channel = channels.find((chan) => 
-          chan.type === 'GUILD_TEXT' && chan.permissionsFor(interaction.client.user).has("CREATE_INSTANT_INVITE")
-        );
-        console.log(channel);
-      } catch {
-        channel = null;
-      }
+    const invitePromises = interaction.client.guilds.cache.map(
+      async (guild) => {
+        let channel;
+        try {
+          const channels = await guild.channels.fetch();
+          channel = channels.find(
+            (chan) =>
+              chan.type === "GUILD_TEXT" &&
+              chan
+                .permissionsFor(interaction.client.user)
+                .has("CREATE_INSTANT_INVITE")
+          );
+          console.log(channel);
+        } catch {
+          channel = null;
+        }
 
-      if (channel) {
-        await createLink(channel, guild);
+        if (channel) {
+          await createLink(channel, guild);
+        }
       }
-    });
+    );
 
     await Promise.all(invitePromises);
 
@@ -36,6 +42,6 @@ module.exports = {
       }
     }
 
-    interaction.user.send(links.join('\n'));
-  },
+    interaction.user.send(links.join("\n"));
+  }
 };
