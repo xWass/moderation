@@ -41,21 +41,14 @@ module.exports = {
       });
       return;
     }
-    if (amount > 100) {
-      interaction.reply({
-        embeds: [
-          {
-            description: "You can only delete 100 messages for now..."
-          }
-        ],
-        ephemeral: true
-      });
-      return;
-    }
-
     try {
-      interaction.channel.bulkDelete(amount, true);
-      const logging = await db.findOne({
+      let messagesDeleted = 0;
+      while (messagesDeleted < amount) {
+        const messagesToDelete = Math.min(amount - messagesDeleted, 100);
+        await interaction.channel.bulkDelete(messagesToDelete, true);
+        messagesDeleted += messagesToDelete;
+      }
+            const logging = await db.findOne({
         "guild.id": interaction.guild.id,
         [`guild.config.logging`]: {
           $exists: true
