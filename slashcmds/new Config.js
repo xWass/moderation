@@ -3,7 +3,7 @@ const { MessageActionRow, MessageButton } = require("discord.js");
 const chalk = require("chalk");
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("test")
+        .setName("newconfig")
         .setDescription("Change bot configurations."),
 
     async execute(interaction, client) {
@@ -11,7 +11,7 @@ module.exports = {
         console.log(
             `${chalk.greenBright(
                 "[EVENT ACKNOWLEDGED]"
-            )} interactionCreate with command test`
+            )} interactionCreate with command newconfig`
         );
 
         const moderator = interaction.user.tag;
