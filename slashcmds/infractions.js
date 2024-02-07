@@ -66,7 +66,7 @@ module.exports = {
       const newArr = await memm.guild.infractions[mem.user.id]
         .map((x) => ({
           name: `${x.type || "N/A"}`,
-          value: `Reason: ${x.reason}\nTime: <t:${x.time}:f>\n${x.moderator}`,
+          value: `**Reason:** ${x.reason}\n**Time:** <t:${x.time}:f>\n**Moderator:**${x.moderator}`,
           inline: false
         }))
         .reverse()
@@ -74,7 +74,7 @@ module.exports = {
       interaction.reply({
         embeds: [
           {
-            description: `**${mem.user.tag}'s infractions:**`,
+            description: `**${mem.user.username}'s infractions:**`,
             fields: newArr,
             footer: {
               text: "Limited to the 10 most recent infractions."

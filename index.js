@@ -134,7 +134,7 @@ client.on("messageDelete", async (message) => {
   });
   const chan = client.channels.cache.get(logging.guild.config.logging.channel);
 
-  if (logging.guild.config.logging.level === "High" || logging.guild.config.logging.level === "Low") {
+  if (logging.guild.config.logging.level === "High") {
     chan.send({
       embeds: [
         {
@@ -170,7 +170,7 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
   });
   const chan = client.channels.cache.get(logging.guild.config.logging.channel);
   if (oldMessage.content === newMessage.content) return;
-  if (logging.guild.config.logging.level === "High" || logging.guild.config.logging.level === "Low") {
+  if (logging.guild.config.logging.level === "High") {
     chan.send({
       embeds: [
         {
