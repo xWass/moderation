@@ -48,7 +48,7 @@ module.exports = {
         await interaction.channel.bulkDelete(messagesToDelete, true);
         messagesDeleted += messagesToDelete;
       }
-            const logging = await db.findOne({
+      const logging = await db.findOne({
         "guild.id": interaction.guild.id,
         [`guild.config.logging`]: {
           $exists: true
